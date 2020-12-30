@@ -53,6 +53,22 @@ import vpype as vp
     help="postblock to write",
 )
 @click.option(
+    "-o",
+    "--premove",
+    nargs=1,
+    default=None,
+    type=str,
+    help="premove to write",
+)
+@click.option(
+    "-O",
+    "--postmove",
+    nargs=1,
+    default=None,
+    type=str,
+    help="postmove to write",
+)
+@click.option(
     "-c",
     "--prelayer",
     nargs=1,
@@ -91,6 +107,8 @@ def gwrite(document: vp.Document, filename: str, version: str,
            line: str,
            preblock: str,
            postblock: str,
+           premove: str,
+           postmove: str,
            prelayer: str,
            postlayer: str,
            footer: str,
@@ -101,8 +119,8 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'header': 'G20\nG17\nG90\n',
                 'move': 'G00 X%.4f Y%.4f\n',
                 'line': 'G01 X%.4f Y%.4f\n',
-                'preblock': 'M381\n',
-                'postblock': 'M380\n',
+                'premove': 'M380\n',
+                'postmove': 'M381\n',
                 'footer': 'M2\n',
                 'scale': 0.2645833333333333  # G20 scale.
             },
@@ -128,6 +146,10 @@ def gwrite(document: vp.Document, filename: str, version: str,
             preblock = writer['preblock']
         if 'postblock' in writer:
             postblock = writer['postblock']
+        if 'premove' in writer:
+            premove = writer['premove']
+        if 'postmove' in writer:
+            postmove = writer['postmove']
         if 'prelayer' in writer:
             prelayer = writer['prelayer']
         if 'postlayer' in writer:
@@ -154,8 +176,12 @@ def gwrite(document: vp.Document, filename: str, version: str,
                     x = v.real
                     y = v.imag
                     if first:
+                        if premove is not None:
+                            f.write(premove)
                         if move is not None:
                             f.write(move % (x, y))
+                        if postmove is not None:
+                            f.write(postmove)
                         first = False
                     else:
                         if line is not None:
