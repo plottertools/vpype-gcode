@@ -85,22 +85,6 @@ import vpype as vp
     help="scale factor",
 )
 @click.option(
-    "-s",
-    "--scale",
-    nargs=1,
-    default=None,
-    type=float,
-    help="scale factor",
-)
-@click.option(
-    "-s",
-    "--scale",
-    nargs=1,
-    default=None,
-    type=float,
-    help="scale factor",
-)
-@click.option(
     "-x",
     "--flip_x",
     is_flag=True,
