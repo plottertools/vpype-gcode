@@ -12,7 +12,8 @@ Gcode vpype plugin. Write gcode files for the vpype pipeline.
 `$ pip install vpype-gcode`
 
 # vpype gwrite --help
-Usage: vpype gwrite [OPTIONS] FILENAME
+
+```Usage: vpype gwrite [OPTIONS] FILENAME
 
 Options:
   -v, --version TEXT    version to write
@@ -29,6 +30,7 @@ Options:
   -y, --flip_y          flip_y from native
   -r, --relative        use relative coordinates
   --help                Show this message and exit.
+```
 
 # Versions
 ```python
