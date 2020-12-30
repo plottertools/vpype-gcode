@@ -103,6 +103,7 @@ import vpype as vp
 @click.option(
     "-x",
     "--flip_x",
+    is_flag=True,
     nargs=1,
     default=None,
     type=bool,
@@ -111,10 +112,20 @@ import vpype as vp
 @click.option(
     "-y",
     "--flip_y",
+    is_flag=True,
     nargs=1,
     default=None,
     type=bool,
     help="flip_y from native",
+)
+@click.option(
+    "-r",
+    "--relative",
+    is_flag=True,
+    nargs=1,
+    default=None,
+    type=bool,
+    help="use relative coordinates",
 )
 @vp.global_processor
 def gwrite(document: vp.Document, filename: str, version: str,
@@ -128,7 +139,8 @@ def gwrite(document: vp.Document, filename: str, version: str,
            footer: str,
            scale: float,
            flip_x: bool,
-           flip_y: bool):
+           flip_y: bool,
+           relative: bool):
     writers = {
         'ninja':
             {
@@ -145,8 +157,16 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
                 'scale': 0.2645833333333333  # G20 scale.
+            },
+        'default_relative':
+            {
+                'header': 'G20\nG17\nG91\n',
+                'move': 'G00 X%.4f Y%.4f\n',
+                'line': 'G01 X%.4f Y%.4f\n',
+                'footer': 'M2\n',
+                'relative': True,
+                'scale': 0.2645833333333333  # G20 scale.
             }
-
     }
     if version in writers:
         writer = writers[version]
@@ -172,9 +192,19 @@ def gwrite(document: vp.Document, filename: str, version: str,
             flip_x = writer['flip_x']
         if 'flip_y' in writer and flip_y is None:
             flip_y = writer['flip_y']
+        if 'relative' in writer and relative is None:
+            relative = writer['relative']
+    if relative is None:
+        relative = False
+    if flip_x is None:
+        flip_x = False
+    if flip_y is None:
+        flip_y = False
     with open(filename, 'w') as f:
         if header is not None:
             f.write(header)
+        last_x = 0
+        last_y = 0
         for layer in document.layers.values():
             if prelayer is not None:
                 f.write(prelayer)
@@ -193,13 +223,26 @@ def gwrite(document: vp.Document, filename: str, version: str,
                     y = v.imag
                     if flip_y:
                         y = -y
-                    if first:
-                        if move is not None:
-                            f.write(move % (x, y))
-                        first = False
+                    if relative:
+                        dx = x - last_x
+                        dy = y - last_y
+                        if first:
+                            if move is not None:
+                                f.write(move % (dx, dy))
+                            first = False
+                        else:
+                            if line is not None:
+                                f.write(line % (dx, dy))
                     else:
-                        if line is not None:
-                            f.write(line % (x, y))
+                        if first:
+                            if move is not None:
+                                f.write(move % (x, y))
+                            first = False
+                        else:
+                            if line is not None:
+                                f.write(line % (x, y))
+                    last_x = x
+                    last_y = y
                 if postblock is not None:
                     f.write(postblock)
             if postlayer is not None:
