@@ -53,22 +53,6 @@ import vpype as vp
     help="postblock to write",
 )
 @click.option(
-    "-o",
-    "--premove",
-    nargs=1,
-    default=None,
-    type=str,
-    help="premove to write",
-)
-@click.option(
-    "-O",
-    "--postmove",
-    nargs=1,
-    default=None,
-    type=str,
-    help="postmove to write",
-)
-@click.option(
     "-c",
     "--prelayer",
     nargs=1,
@@ -100,6 +84,38 @@ import vpype as vp
     type=float,
     help="scale factor",
 )
+@click.option(
+    "-s",
+    "--scale",
+    nargs=1,
+    default=None,
+    type=float,
+    help="scale factor",
+)
+@click.option(
+    "-s",
+    "--scale",
+    nargs=1,
+    default=None,
+    type=float,
+    help="scale factor",
+)
+@click.option(
+    "-x",
+    "--flip_x",
+    nargs=1,
+    default=None,
+    type=bool,
+    help="flip_x from native",
+)
+@click.option(
+    "-y",
+    "--flip_y",
+    nargs=1,
+    default=None,
+    type=bool,
+    help="flip_y from native",
+)
 @vp.global_processor
 def gwrite(document: vp.Document, filename: str, version: str,
            header: str,
@@ -107,20 +123,18 @@ def gwrite(document: vp.Document, filename: str, version: str,
            line: str,
            preblock: str,
            postblock: str,
-           premove: str,
-           postmove: str,
            prelayer: str,
            postlayer: str,
            footer: str,
-           scale: float):
+           scale: float,
+           flip_x: bool,
+           flip_y: bool):
     writers = {
         'ninja':
             {
                 'header': 'G20\nG17\nG90\n',
-                'move': 'G00 X%.4f Y%.4f\n',
+                'move': 'M380\nG00 X%.4f Y%.4f\nM381\n',
                 'line': 'G01 X%.4f Y%.4f\n',
-                'premove': 'M380\n',
-                'postmove': 'M381\n',
                 'footer': 'M2\n',
                 'scale': 0.2645833333333333  # G20 scale.
             },
@@ -136,28 +150,28 @@ def gwrite(document: vp.Document, filename: str, version: str,
     }
     if version in writers:
         writer = writers[version]
-        if 'header' in writer:
+        if 'header' in writer and header is None:
             header = writer['header']
-        if 'move' in writer:
+        if 'move' in writer and move is None:
             move = writer['move']
-        if 'line' in writer:
+        if 'line' in writer and line is None:
             line = writer['line']
-        if 'preblock' in writer:
+        if 'preblock' in writer and preblock is None:
             preblock = writer['preblock']
-        if 'postblock' in writer:
+        if 'postblock' in writer and postblock is None:
             postblock = writer['postblock']
-        if 'premove' in writer:
-            premove = writer['premove']
-        if 'postmove' in writer:
-            postmove = writer['postmove']
-        if 'prelayer' in writer:
+        if 'prelayer' in writer and prelayer is None:
             prelayer = writer['prelayer']
-        if 'postlayer' in writer:
+        if 'postlayer' in writer and postlayer is None:
             postlayer = writer['postlayer']
-        if 'footer' in writer:
+        if 'footer' in writer and footer is None:
             footer = writer['footer']
-        if 'scale' in writer:
+        if 'scale' in writer and scale is None:
             scale = writer['scale']
+        if 'flip_x' in writer and flip_x is None:
+            flip_x = writer['flip_x']
+        if 'flip_y' in writer and flip_y is None:
+            flip_y = writer['flip_y']
     with open(filename, 'w') as f:
         if header is not None:
             f.write(header)
@@ -174,14 +188,14 @@ def gwrite(document: vp.Document, filename: str, version: str,
                     f.write(preblock)
                 for v in m:
                     x = v.real
+                    if flip_x:
+                        x = -x
                     y = v.imag
+                    if flip_y:
+                        y = -y
                     if first:
-                        if premove is not None:
-                            f.write(premove)
                         if move is not None:
                             f.write(move % (x, y))
-                        if postmove is not None:
-                            f.write(postmove)
                         first = False
                     else:
                         if line is not None:
