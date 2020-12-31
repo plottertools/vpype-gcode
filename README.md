@@ -83,7 +83,7 @@ Options:
 
 ## Convert SVG -> GCode
 
-`vpype read butterfly.svg gwrite --version default butterfly.gcode`
+`vpype read butterfly.svg gwrite --version gcode butterfly.gcode`
 
 Loads up a svg and writes it in default gcode.
 
@@ -92,6 +92,7 @@ Loads up a svg and writes it in default gcode.
 Here we are creating a grid of circles then we are `gwrite` in version `ninja` with a flipped y-axis and a footer of M99 rather than our default footer in `ninja` that is `M2\n`
 
 Let's say our gcode is so different that it's an CSV file.
+
 `vpype begin grid -o 25 25 10 10 circle 0 0 100 end gwrite --header "#Operation, X-value, Y-value\n" --move "Move, %d, %d\n" --line "Line-to, %d, %d\n" test.csv`
 
 This produces:
@@ -120,7 +121,7 @@ Line-to, 0, 0
 
 This produces a plain text CSV file of the rectangle.
 
-Now using versions we could have done `--version csv` for this.
+Now using versions we could have done `--version csv` for this, but you can simply give the parts needed to perform your output.
 
 
 # Formatting
@@ -228,3 +229,4 @@ Sending our rectangle to Json:
 }
 ```
 
+Strictly speaking json shouldn't have the last 2 commas there, but it's for demonstration purposes.
