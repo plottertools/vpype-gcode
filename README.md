@@ -112,12 +112,14 @@ Line-to, 25, -6
 Giving it a simplier example:
 `vpype rect 0 0 100 100 gwrite --header "#Operation, X-value, Y-value\n" --move "Move, %d, %d\n" --line "Line-to, %d, %d\n"  test.csv`
 
+```csv
 #Operation, X-value, Y-value
 Move, 0, 0
 Line-to, 0, 100
 Line-to, 100, 100
 Line-to, 100, 0
 Line-to, 0, 0
+```
 
 This produces a plain text CSV file of the rectangle.
 
