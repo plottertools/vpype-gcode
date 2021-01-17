@@ -6,7 +6,7 @@ with open("README.md") as f:
 
 setup(
     name="vpype-gcode",
-    version="0.0.5",
+    version="0.0.7",
     description="vpype gcode plugin",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -27,7 +27,6 @@ setup(
     ],
     entry_points="""
             [vpype.plugins]
-            gread=vpype_gcode.gread:gread
             gwrite=vpype_gcode.gwrite:gwrite
         """,
 )

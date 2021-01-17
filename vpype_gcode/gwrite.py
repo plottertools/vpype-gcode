@@ -8,7 +8,7 @@ import vpype as vp
     "-v",
     "--version",
     nargs=1,
-    default='default',
+    default=None,
     type=str,
     help="version to write",
 )
@@ -125,6 +125,10 @@ def gwrite(document: vp.Document, filename: str, version: str,
            flip_x: bool,
            flip_y: bool,
            relative: bool):
+    if version is None and header is None and move is None \
+            and line is None and preblock is None and postblock is None \
+            and prelayer is None and postlayer is None and footer is None:
+        version = "gcode"
     writers = {
         'ninja':
             {
@@ -134,7 +138,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'footer': 'M2\n',
                 'scale': 0.2645833333333333  # G20 scale.
             },
-        'default':
+        'gcode':
             {
                 'header': 'G20\nG17\nG90\n',
                 'move': 'G00 X%.4f Y%.4f\n',
@@ -142,7 +146,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'footer': 'M2\n',
                 'scale': 0.2645833333333333  # G20 scale.
             },
-        'default_relative':
+        'gcode_relative':
             {
                 'header': 'G20\nG17\nG91\n',
                 'move': 'G00 X%.4f Y%.4f\n',
@@ -150,7 +154,25 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'footer': 'M2\n',
                 'relative': True,
                 'scale': 0.2645833333333333  # G20 scale.
-            }
+            },
+        'csv':
+            {
+                'header': "#Operation, X-value, Y-value\n",
+                'move': "Move, %f, %f\n",
+                'line': "Line-to, %f, %f\n"
+            },
+        'json':
+            {
+                'header': '{\n',
+                'footer': '}\n',
+                'prelayer': '\t"Layer": {\n',
+                'preblock': '\t\t"Block": [\n',
+                'move': '\t\t{\n\t\t\t"X": %d,\n\t\t\t"Y": %d\n\t\t}',
+                'line': ',\n\t\t{\n\t\t\t"X": %d,\n\t\t\t"Y": %d\n\t\t}',
+                'postblock': '\n\t\t],\n',
+                'postlayer': '\t},\n',
+            }  # Json is nearly validated has extra ',' on the last post-block and post-layer.
+
     }
     if version in writers:
         writer = writers[version]
@@ -178,6 +200,22 @@ def gwrite(document: vp.Document, filename: str, version: str,
             flip_y = writer['flip_y']
         if 'relative' in writer and relative is None:
             relative = writer['relative']
+    if header is not None:
+        header = header.replace('\\n', '\n')
+    if move is not None:
+        move = move.replace('\\n', '\n')
+    if line is not None:
+        line = line.replace('\\n', '\n')
+    if preblock is not None:
+        preblock = preblock.replace('\\n', '\n')
+    if postblock is not None:
+        postblock = postblock.replace('\\n', '\n')
+    if prelayer is not None:
+        prelayer = prelayer.replace('\\n', '\n')
+    if postlayer is not None:
+        postlayer = postlayer.replace('\\n', '\n')
+    if footer is not None:
+        footer = footer.replace('\\n', '\n')
     if relative is None:
         relative = False
     if flip_x is None:
