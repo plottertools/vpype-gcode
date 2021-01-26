@@ -7,10 +7,10 @@ def invert_axis(
     invert_x: bool,
     invert_y: bool
 ):
-    """ Inverts none, one or borth axis of the document.
+    """ Inverts none, one or both axis of the document.
 
     This applies a relative scale operation with factors of 1 or -1
-    on the two axis to all layers. The invertion happens relative to
+    on the two axis to all layers. The inversion happens relative to
     the center of the bounds.
     """
 
