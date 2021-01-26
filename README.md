@@ -26,8 +26,18 @@ Options:
   -C, --postlayer TEXT  postlayer to write
   -h, --footer TEXT     header to write
   -u, --unit TEXT       unit for coordinates (i.e. in or mm)
-  -x, --flip_x          flip_x from native
-  -y, --flip_y          flip_y from native
+  --negate_x            change the sign of the x coordinates by multiplying
+                        them with -1
+
+  --negate_y            change the sign of the y coordinates by multiplying
+                        them with -1
+
+  --invert_x            invert or mirror all points on the middle of the x
+                        axis
+
+  --invert_y            invert or mirror all points on the middle of the y
+                        axis
+
   -r, --relative        use relative coordinates
   --help                Show this message and exit.
 ```
@@ -87,9 +97,9 @@ Options:
 
 Loads up a svg and writes it in default gcode.
 
-`vpype begin grid -o 25 25 10 10 circle 0 0 100 end gwrite --version ninja -y --footer M99 test.gcode`
+`vpype begin grid -o 25 25 10 10 circle 0 0 100 end gwrite --version ninja --negate_y --footer M99 test.gcode`
 
-Here we are creating a grid of circles then we are `gwrite` in version `ninja` with a flipped y-axis and a footer of M99 rather than our default footer in `ninja` that is `M2\n`
+Here we are creating a grid of circles then we are `gwrite` in version `ninja` with a flipped/negated y-axis and a footer of M99 rather than our default footer in `ninja` that is `M2\n`
 
 Let's say our gcode is so different that it's an CSV file.
 
