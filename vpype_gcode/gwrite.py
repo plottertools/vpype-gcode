@@ -77,12 +77,12 @@ import vpype as vp
     help="header to write",
 )
 @click.option(
-    "-s",
-    "--scale",
+    "-u",
+    "--unit",
     nargs=1,
-    default=None,
-    type=float,
-    help="scale factor",
+    default="px",
+    type=str,
+    help="unit for coordinates",
 )
 @click.option(
     "-x",
@@ -121,7 +121,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
            prelayer: str,
            postlayer: str,
            footer: str,
-           scale: float,
+           unit: str,
            flip_x: bool,
            flip_y: bool,
            relative: bool):
@@ -136,7 +136,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'move': 'M380\nG00 X%.4f Y%.4f\nM381\n',
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
-                'scale': 0.2645833333333333  # G20 scale.
+                'unit': 'mm'
             },
         'gcode':
             {
@@ -144,7 +144,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'move': 'G00 X%.4f Y%.4f\n',
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
-                'scale': 0.2645833333333333  # G20 scale.
+                'unit': 'mm'
             },
         'gcode_relative':
             {
@@ -153,7 +153,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
                 'relative': True,
-                'scale': 0.2645833333333333  # G20 scale.
+                'unit': 'mm'
             },
         'csv':
             {
@@ -192,8 +192,8 @@ def gwrite(document: vp.Document, filename: str, version: str,
             postlayer = writer['postlayer']
         if 'footer' in writer and footer is None:
             footer = writer['footer']
-        if 'scale' in writer and scale is None:
-            scale = writer['scale']
+        if 'unit' in writer and unit is None:
+            unit = writer['unit']
         if 'flip_x' in writer and flip_x is None:
             flip_x = writer['flip_x']
         if 'flip_y' in writer and flip_y is None:
@@ -222,6 +222,10 @@ def gwrite(document: vp.Document, filename: str, version: str,
         flip_x = False
     if flip_y is None:
         flip_y = False
+
+
+    scale = 1 / vp.convert_length(unit)
+
     with open(filename, 'w') as f:
         if header is not None:
             f.write(header)
@@ -231,10 +235,7 @@ def gwrite(document: vp.Document, filename: str, version: str,
             if prelayer is not None:
                 f.write(prelayer)
             for p in layer:
-                if scale is not None:
-                    m = p * scale
-                else:
-                    m = p
+                m = p * scale
                 first = True
                 if preblock is not None:
                     f.write(preblock)
