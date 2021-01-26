@@ -1,6 +1,39 @@
 import click
 import vpype as vp
+from vpype.layers import LayerType
 
+def invert_axis(
+    document: vp.Document,
+    invert_x: bool,
+    invert_y: bool
+):
+    """ Inverts none, one or borth axis of the document.
+
+    This applies a relative scale operation with factors of 1 or -1
+    on the two axis to all layers. The invertion happens relative to
+    the center of the bounds.
+    """
+
+    layer_ids = vp.multiple_to_layer_ids(LayerType.ALL, document)
+    bounds = document.bounds(layer_ids)
+
+    if not bounds:
+        logging.warning("no geometry available, cannot compute origin")
+        raise ValueError
+
+    origin = (
+        0.5 * (bounds[0] + bounds[2]),
+        0.5 * (bounds[1] + bounds[3]),
+    )
+
+    for vid in layer_ids:
+        lc = document[vid]
+        lc.translate(-origin[0], -origin[1])
+        lc.scale(-1 if invert_x else 1, -1 if invert_y else 1)
+        lc.translate(origin[0], origin[1])
+
+
+    return document
 
 @click.command()
 @click.argument('filename', type=click.Path(exists=False))
@@ -85,22 +118,36 @@ import vpype as vp
     help="unit for coordinates",
 )
 @click.option(
-    "-x",
-    "--flip_x",
+    "--negate_x",
     is_flag=True,
     nargs=1,
     default=None,
     type=bool,
-    help="flip_x from native",
+    help="change the sign of the x coordinates by multiplying them with -1",
 )
 @click.option(
-    "-y",
-    "--flip_y",
+    "--negate_y",
     is_flag=True,
     nargs=1,
     default=None,
     type=bool,
-    help="flip_y from native",
+    help="change the sign of the y coordinates by multiplying them with -1",
+)
+@click.option(
+    "--invert_x",
+    is_flag=True,
+    nargs=1,
+    default=None,
+    type=bool,
+    help="invert or mirror all points on the middle of the x axis",
+)
+@click.option(
+    "--invert_y",
+    is_flag=True,
+    nargs=1,
+    default=None,
+    type=bool,
+    help="invert or mirror all points on the middle of the y axis",
 )
 @click.option(
     "-r",
@@ -122,8 +169,10 @@ def gwrite(document: vp.Document, filename: str, version: str,
            postlayer: str,
            footer: str,
            unit: str,
-           flip_x: bool,
-           flip_y: bool,
+           negate_x: bool,
+           negate_y: bool,
+           invert_x: bool,
+           invert_y: bool,
            relative: bool):
     if version is None and header is None and move is None \
             and line is None and preblock is None and postblock is None \
@@ -194,10 +243,14 @@ def gwrite(document: vp.Document, filename: str, version: str,
             footer = writer['footer']
         if 'unit' in writer and unit is None:
             unit = writer['unit']
-        if 'flip_x' in writer and flip_x is None:
-            flip_x = writer['flip_x']
-        if 'flip_y' in writer and flip_y is None:
-            flip_y = writer['flip_y']
+        if 'negate_x' in writer and negate_x is None:
+            negeate_x = writer['negate_x']
+        if 'negate_y' in writer and negate_y is None:
+            negate_y = writer['negate_y']
+        if 'invert_x' in writer and invert_x is None:
+            invert_x = writer['invert_x']
+        if 'invert_y' in writer and invert_y is None:
+            invert_y = writer['invert_y']
         if 'relative' in writer and relative is None:
             relative = writer['relative']
     if header is not None:
@@ -218,13 +271,19 @@ def gwrite(document: vp.Document, filename: str, version: str,
         footer = footer.replace('\\n', '\n')
     if relative is None:
         relative = False
-    if flip_x is None:
-        flip_x = False
-    if flip_y is None:
-        flip_y = False
-
+    if negate_x is None:
+        negate_x = False
+    if negate_y is None:
+        negate_y = False
+    if invert_x is None:
+        invert_x = False
+    if invert_y is None:
+        invert_y = False
 
     scale = 1 / vp.convert_length(unit)
+
+    if invert_x or invert_y:
+      document = invert_axis(document, invert_x, invert_y)
 
     with open(filename, 'w') as f:
         if header is not None:
@@ -241,10 +300,10 @@ def gwrite(document: vp.Document, filename: str, version: str,
                     f.write(preblock)
                 for v in m:
                     x = v.real
-                    if flip_x:
+                    if negate_x:
                         x = -x
                     y = v.imag
-                    if flip_y:
+                    if negate_y:
                         y = -y
                     if relative:
                         dx = x - last_x
