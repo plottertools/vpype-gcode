@@ -25,7 +25,7 @@ Options:
   -c, --prelayer TEXT   prelayer to write
   -C, --postlayer TEXT  postlayer to write
   -h, --footer TEXT     header to write
-  -s, --scale FLOAT     scale factor
+  -u, --unit TEXT       unit for coordinates (i.e. in or mm)
   -x, --flip_x          flip_x from native
   -y, --flip_y          flip_y from native
   -r, --relative        use relative coordinates
@@ -40,7 +40,7 @@ Options:
                 'move': 'M380\nG00 X%.4f Y%.4f\nM381\n',
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
-                'scale': 0.2645833333333333  # G20 scale.
+                'unit': 'mm'
             },
         'gcode':
             {
@@ -48,7 +48,7 @@ Options:
                 'move': 'G00 X%.4f Y%.4f\n',
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
-                'scale': 0.2645833333333333  # G20 scale.
+                'unit': 'mm'
             },
         'gcode_relative':
             {
@@ -57,7 +57,7 @@ Options:
                 'line': 'G01 X%.4f Y%.4f\n',
                 'footer': 'M2\n',
                 'relative': True,
-                'scale': 0.2645833333333333  # G20 scale.
+                'unit': 'mm'
             }
         'csv':
             {
