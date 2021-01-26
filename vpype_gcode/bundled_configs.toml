@@ -1,0 +1,37 @@
+[gwrite.ninja]
+header = "G20\nG17\nG90\n"
+move =  "M380\nG00 X%.4f Y%.4f\nM381\n"
+line = "G01 X%.4f Y%.4f\n"
+footer = "M2\n"
+unit = "mm"
+
+[gwrite.gcode]
+header = "G20\nG17\nG90\n"
+move = "G00 X%.4f Y%.4f\n"
+line = "G01 X%.4f Y%.4f\n"
+footer = "M2\n"
+unit = "mm"
+
+[gwrite.gcode_relative]
+header = "G20\nG17\nG91\n"
+move = "G00 X%.4f Y%.4f\n"
+line = "G01 X%.4f Y%.4f\n"
+footer = "M2\n"
+relative = true
+unit = "mm"
+
+[gwrite.csv]
+header = "#Operation, X-value, Y-value\n"
+move = "Move, %f, %f\n"
+line = "Line-to, %f, %f\n"
+
+
+[gwrite.json]
+header = "{\n"
+footer = "}\n"
+prelayer = "\t\"Layer\": {\n"
+preblock = "\t\t\"Block\": [\n"
+move = "\t\t{\n\t\t\t\"X\": %d,\n\t\t\t\"Y\": %d\n\t\t}"
+line = ",\n\t\t{\n\t\t\t\"X\": %d,\n\t\t\t\"Y\": %d\n\t\t}"
+postblock = "\n\t\t],\n"
+postlayer = "\t},\n"
