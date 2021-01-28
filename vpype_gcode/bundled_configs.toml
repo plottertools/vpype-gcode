@@ -1,52 +1,50 @@
 [gwrite.ninja]
-header = "G20\nG17\nG90\n"
-firstsegment =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
+document_start = "G20\nG17\nG90\n"
+segment_first =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
-footer = "M2\n"
+document_end = "M2\n"
 unit = "mm"
 
 [gwrite.gcode]
-header = "G20\nG17\nG90\n"
-firstsegment = "G00 X{x:.4f} Y{y:.4f}\n"
+document_start = "G20\nG17\nG90\n"
+segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
-footer = "M2\n"
+document_end = "M2\n"
 unit = "mm"
 
 [gwrite.gcode_relative]
-header = "G20\nG17\nG91\n"
-firstsegment = "G00 X{dx:.4f} Y{dy:.4f}\n"
+document_start = "G20\nG17\nG91\n"
+segment_first = "G00 X{dx:.4f} Y{dy:.4f}\n"
 segment = "G01 X{dx:.4f} Y{dy:.4f}\n"
-footer = "M2\n"
+document_end = "M2\n"
 unit = "mm"
 
 [gwrite.csv]
-header = "#Operation, X-value, Y-value\n"
-firstsegment = "Move, {x:f}, {x:f}\n"
+document_start = "#Operation, X-value, Y-value\n"
+segment_first = "Move, {x:f}, {x:f}\n"
 segment = "Line-to, {x:f}, {x:f}\n"
-lastsegment = "Stop, {x:f}, {x:f}\n"
+segment_last = "Stop, {x:f}, {x:f}\n"
 
 [gwrite.json]
-header = "{{"
-footer = "}}\n"
-linejoin = ","
-layerjoin = ","
-prelayer = "\n\t\"Layer\": {{"
-postlayer = "\t}}\n"
-preline = "\n\t\t\"LineCollection{index:d}\": [\n"
-postline = "\n\t\t]"
+document_start = "{{"
+document_end = "}}\n"
+linecollection_join = ","
+layer_join = ","
+layer_start = "\n\t\"Layer\": {{"
+layer_end = "\t}}\n"
+linecollection_start = "\n\t\t\"LineCollection{index:d}\": [\n"
+linecollection_end = "\n\t\t]"
 segment = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}},\n"
-lastsegment = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}}"
-
-
+segment_last = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}}"
 
 [gwrite.isvg]
-header = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+document_start = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
 """
-footer = "</svg>"
-prelayer = '<g fill="none" stroke="black">'
-preline = '<path d="M '
-firstsegment = "{ix:d} {iy:d} l"
+document_end = "</svg>"
+layer_start = '<g fill="none" stroke="black">'
+linecollection_start = '<path d="M '
+segment_first = "{ix:d} {iy:d} l"
 segment = "{idx:d} {idy:d} "
-postline = '"/>'
-postlayer = "</g>"
+linecollection_end = '"/>'
+layer_end = "</g>"

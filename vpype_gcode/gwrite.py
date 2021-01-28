@@ -74,17 +74,17 @@ def gwrite(document: vp.Document, filename: str, profile: str):
 
     # Read the config for the profile from the main vpype
     config = gwrite_config[profile]
-    header = config.get("header", None)
-    firstsegment = config.get("firstsegment", None)
+    document_start = config.get("document_start", None)
+    document_end = config.get("document_end", None)
+    layer_start = config.get("layer_start", None)
+    layer_end = config.get("layer_end", None)
+    layer_join = config.get("layer_join", None)
+    linecollection_start = config.get("linecollection_start", None)
+    linecollection_end = config.get("linecollection_end", None)
+    linecollection_join = config.get("linecollection_join", None)
+    segment_first = config.get("segment_first", None)
     segment = config.get("segment", None)
-    lastsegment = config.get("lastsegment", None)
-    prelayer = config.get("prelayer", None)
-    postlayer = config.get("postlayer", None)
-    layerjoin = config.get("layerjoin", None)
-    preline = config.get("preline", None)
-    postline = config.get("postline", None)
-    linejoin = config.get("linejoin", None)
-    footer = config.get("footer", None)
+    segment_last = config.get("segment_last", None)
     unit = config.get("unit", "mm")
 
     invert_x = config.get("invert_x", False)
@@ -96,22 +96,22 @@ def gwrite(document: vp.Document, filename: str, profile: str):
         document = invert_axis(document, invert_x, invert_y)
 
     with open(filename, "w") as f:
-        if header is not None:
-            f.write(header.format(filename=filename))
+        if document_start is not None:
+            f.write(document_start.format(filename=filename))
         last_x = 0
         last_y = 0
         xx = 0
         yy = 0
         lastlayer_index = len(document.layers.values()) - 1
         for layer_index, layer in enumerate(document.layers.values()):
-            if prelayer is not None:
-                f.write(prelayer.format(index=layer_index))
+            if layer_start is not None:
+                f.write(layer_start.format(index=layer_index))
             lastlines_index = len(layer) - 1
             for lines_index, lines in enumerate(layer):
                 lines_scaled = lines * scale
-                if preline is not None:
-                    f.write(preline.format(index=lines_index))
-                lastsegment_index = len(lines_scaled) - 1
+                if linecollection_start is not None:
+                    f.write(linecollection_start.format(index=lines_index))
+                segment_last_index = len(lines_scaled) - 1
                 for segment_index, seg in enumerate(lines_scaled):
                     x = seg.real
                     y = seg.imag
@@ -121,10 +121,10 @@ def gwrite(document: vp.Document, filename: str, profile: str):
                     idy = int(round(y - yy))
                     xx += idx
                     yy += idy
-                    if firstsegment is not None and segment_index == 0:
-                        seg_write = firstsegment
-                    elif lastsegment is not None and segment_index == lastsegment_index:
-                        seg_write = lastsegment
+                    if segment_first is not None and segment_index == 0:
+                        seg_write = segment_first
+                    elif segment_last is not None and segment_index == segment_last_index:
+                        seg_write = segment_last
                     else:
                         seg_write = segment
                     f.write(
@@ -146,16 +146,16 @@ def gwrite(document: vp.Document, filename: str, profile: str):
                     )
                     last_x = x
                     last_y = y
-                if postline is not None:
-                    f.write(postline.format(index=lines_index))
-                if linejoin is not None and lines_index != lastlines_index:
-                    f.write(linejoin)
-            if postlayer is not None:
-                f.write(postlayer.format(index=layer_index))
-            if layerjoin is not None and layer_index != lastlayer_index:
-                f.write(layerjoin)
-        if footer is not None:
-            f.write(footer.format(filename=filename))
+                if linecollection_end is not None:
+                    f.write(linecollection_end.format(index=lines_index))
+                if linecollection_join is not None and lines_index != lastlines_index:
+                    f.write(linecollection_join)
+            if layer_end is not None:
+                f.write(layer_end.format(index=layer_index))
+            if layer_join is not None and layer_index != lastlayer_index:
+                f.write(layer_join)
+        if document_end is not None:
+            f.write(document_end.format(filename=filename))
 
     return document
 
