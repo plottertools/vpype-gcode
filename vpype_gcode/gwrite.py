@@ -1,6 +1,10 @@
 import click
+from pathlib import Path
 import vpype as vp
 from vpype.layers import LayerType
+
+# Load the default config
+vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 def invert_axis(
     document: vp.Document,
@@ -18,8 +22,7 @@ def invert_axis(
     bounds = document.bounds(layer_ids)
 
     if not bounds:
-        logging.warning("no geometry available, cannot compute origin")
-        raise ValueError
+        raise ValueError("no geometry available, cannot compute origin")
 
     origin = (
         0.5 * (bounds[0] + bounds[2]),
@@ -38,247 +41,58 @@ def invert_axis(
 @click.command()
 @click.argument('filename', type=click.Path(exists=False))
 @click.option(
-    "-v",
-    "--version",
+    "-p",
+    "--profile",
     nargs=1,
     default=None,
     type=str,
-    help="version to write",
-)
-@click.option(
-    "-h",
-    "--header",
-    nargs=1,
-    default=None,
-    type=str,
-    help="header to write",
-)
-@click.option(
-    "-m",
-    "--move",
-    nargs=1,
-    default=None,
-    type=str,
-    help="move to write",
-)
-@click.option(
-    "-l",
-    "--line",
-    nargs=1,
-    default=None,
-    type=str,
-    help="header to write",
-)
-@click.option(
-    "-b",
-    "--preblock",
-    nargs=1,
-    default=None,
-    type=str,
-    help="preblock to write",
-)
-@click.option(
-    "-B",
-    "--postblock",
-    nargs=1,
-    default=None,
-    type=str,
-    help="postblock to write",
-)
-@click.option(
-    "-c",
-    "--prelayer",
-    nargs=1,
-    default=None,
-    type=str,
-    help="prelayer to write",
-)
-@click.option(
-    "-C",
-    "--postlayer",
-    nargs=1,
-    default=None,
-    type=str,
-    help="postlayer to write",
-)
-@click.option(
-    "-h",
-    "--footer",
-    nargs=1,
-    default=None,
-    type=str,
-    help="header to write",
-)
-@click.option(
-    "-u",
-    "--unit",
-    nargs=1,
-    default="px",
-    type=str,
-    help="unit for coordinates",
-)
-@click.option(
-    "--negate_x",
-    is_flag=True,
-    nargs=1,
-    default=None,
-    type=bool,
-    help="change the sign of the x coordinates by multiplying them with -1",
-)
-@click.option(
-    "--negate_y",
-    is_flag=True,
-    nargs=1,
-    default=None,
-    type=bool,
-    help="change the sign of the y coordinates by multiplying them with -1",
-)
-@click.option(
-    "--invert_x",
-    is_flag=True,
-    nargs=1,
-    default=None,
-    type=bool,
-    help="invert or mirror all points on the middle of the x axis",
-)
-@click.option(
-    "--invert_y",
-    is_flag=True,
-    nargs=1,
-    default=None,
-    type=bool,
-    help="invert or mirror all points on the middle of the y axis",
-)
-@click.option(
-    "-r",
-    "--relative",
-    is_flag=True,
-    nargs=1,
-    default=None,
-    type=bool,
-    help="use relative coordinates",
+    help="gcode writer profile from the vpype configuration file subsection 'gwrite'",
 )
 @vp.global_processor
-def gwrite(document: vp.Document, filename: str, version: str,
-           header: str,
-           move: str,
-           line: str,
-           preblock: str,
-           postblock: str,
-           prelayer: str,
-           postlayer: str,
-           footer: str,
-           unit: str,
-           negate_x: bool,
-           negate_y: bool,
-           invert_x: bool,
-           invert_y: bool,
-           relative: bool):
-    if version is None and header is None and move is None \
-            and line is None and preblock is None and postblock is None \
-            and prelayer is None and postlayer is None and footer is None:
-        version = "gcode"
-    writers = {
-        'ninja':
-            {
-                'header': 'G20\nG17\nG90\n',
-                'move': 'M380\nG00 X%.4f Y%.4f\nM381\n',
-                'line': 'G01 X%.4f Y%.4f\n',
-                'footer': 'M2\n',
-                'unit': 'mm'
-            },
-        'gcode':
-            {
-                'header': 'G20\nG17\nG90\n',
-                'move': 'G00 X%.4f Y%.4f\n',
-                'line': 'G01 X%.4f Y%.4f\n',
-                'footer': 'M2\n',
-                'unit': 'mm'
-            },
-        'gcode_relative':
-            {
-                'header': 'G20\nG17\nG91\n',
-                'move': 'G00 X%.4f Y%.4f\n',
-                'line': 'G01 X%.4f Y%.4f\n',
-                'footer': 'M2\n',
-                'relative': True,
-                'unit': 'mm'
-            },
-        'csv':
-            {
-                'header': "#Operation, X-value, Y-value\n",
-                'move': "Move, %f, %f\n",
-                'line': "Line-to, %f, %f\n"
-            },
-        'json':
-            {
-                'header': '{\n',
-                'footer': '}\n',
-                'prelayer': '\t"Layer": {\n',
-                'preblock': '\t\t"Block": [\n',
-                'move': '\t\t{\n\t\t\t"X": %d,\n\t\t\t"Y": %d\n\t\t}',
-                'line': ',\n\t\t{\n\t\t\t"X": %d,\n\t\t\t"Y": %d\n\t\t}',
-                'postblock': '\n\t\t],\n',
-                'postlayer': '\t},\n',
-            }  # Json is nearly validated has extra ',' on the last post-block and post-layer.
+def gwrite(document: vp.Document, filename: str, profile: str):
+    gwrite_config = vp.CONFIG_MANAGER.config["gwrite"]
 
-    }
-    if version in writers:
-        writer = writers[version]
-        if 'header' in writer and header is None:
-            header = writer['header']
-        if 'move' in writer and move is None:
-            move = writer['move']
-        if 'line' in writer and line is None:
-            line = writer['line']
-        if 'preblock' in writer and preblock is None:
-            preblock = writer['preblock']
-        if 'postblock' in writer and postblock is None:
-            postblock = writer['postblock']
-        if 'prelayer' in writer and prelayer is None:
-            prelayer = writer['prelayer']
-        if 'postlayer' in writer and postlayer is None:
-            postlayer = writer['postlayer']
-        if 'footer' in writer and footer is None:
-            footer = writer['footer']
-        if 'unit' in writer and unit is None:
-            unit = writer['unit']
-        if 'negate_x' in writer and negate_x is None:
-            negeate_x = writer['negate_x']
-        if 'negate_y' in writer and negate_y is None:
-            negate_y = writer['negate_y']
-        if 'invert_x' in writer and invert_x is None:
-            invert_x = writer['invert_x']
-        if 'invert_y' in writer and invert_y is None:
-            invert_y = writer['invert_y']
-        if 'relative' in writer and relative is None:
-            relative = writer['relative']
-    if header is not None:
-        header = header.replace('\\n', '\n')
-    if move is not None:
-        move = move.replace('\\n', '\n')
-    if line is not None:
-        line = line.replace('\\n', '\n')
-    if preblock is not None:
-        preblock = preblock.replace('\\n', '\n')
-    if postblock is not None:
-        postblock = postblock.replace('\\n', '\n')
-    if prelayer is not None:
-        prelayer = prelayer.replace('\\n', '\n')
-    if postlayer is not None:
-        postlayer = postlayer.replace('\\n', '\n')
-    if footer is not None:
-        footer = footer.replace('\\n', '\n')
-    if relative is None:
-        relative = False
-    if negate_x is None:
-        negate_x = False
-    if negate_y is None:
-        negate_y = False
-    if invert_x is None:
-        invert_x = False
-    if invert_y is None:
-        invert_y = False
+    # If no profile was provided, try to use a default
+    if not profile:
+        # Try to get the default profile from the config
+        if "default_profile" in gwrite_config:
+            profile = gwrite_config["default_profile"]
+        else:
+            raise click.BadParameter(
+                "no gwrite profile provided on the commandline and no default gwrite "
+                + "profile configured in the vpype configuration. This can be done using "
+                + 'the "default_default" key in the "gwrite" section'
+            )
+
+    # Check that the profile is actually there, we can be sure that the `gwrite`
+    # part exists as there are several default profiles.
+    if profile not in gwrite_config:
+        profiles = [p for p in gwrite_config.keys() if p != "default_profile"]
+        raise click.BadParameter(
+            "gwrite profile "
+            + profile
+            + " not found in vpype configuration. Available gwrite profiles: "
+            + ", ".join(profiles)
+        )
+
+    # Read the config for the profile from the main vpype
+    config = gwrite_config[profile]
+
+    header = config.get("header", None)
+    move = config.get("move", None)
+    line = config.get("line", None)
+    preblock = config.get("preblock", None)
+    postblock = config.get("postblock", None)
+    prelayer = config.get("prelayer", None)
+    postlayer = config.get("postlayer", None)
+    footer = config.get("footer", None)
+    unit = config.get("unit", "mm")
+
+    relative = config.get("relative", False)
+    negate_x = config.get("negate_x", False)
+    negate_y = config.get("negate_y", False)
+    invert_x = config.get("invert_x", False)
+    invert_y = config.get("invert_y", False)
 
     scale = 1 / vp.convert_length(unit)
 
