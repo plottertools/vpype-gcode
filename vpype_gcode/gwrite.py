@@ -7,12 +7,8 @@ from vpype.layers import LayerType
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
-def invert_axis(
-    document: vp.Document,
-    invert_x: bool,
-    invert_y: bool
-):
-    """ Inverts none, one or both axis of the document.
+def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
+    """Inverts none, one or both axis of the document.
 
     This applies a relative scale operation with factors of 1 or -1
     on the two axis to all layers. The inversion happens relative to
@@ -40,7 +36,7 @@ def invert_axis(
 
 
 @click.command()
-@click.argument('filename', type=click.Path(exists=False))
+@click.argument("filename", type=click.Path(exists=False))
 @click.option(
     "-p",
     "--profile",
@@ -89,9 +85,6 @@ def gwrite(document: vp.Document, filename: str, profile: str):
     footer = config.get("footer", None)
     unit = config.get("unit", "mm")
 
-    relative = config.get("relative", False)
-    negate_x = config.get("negate_x", False)
-    negate_y = config.get("negate_y", False)
     invert_x = config.get("invert_x", False)
     invert_y = config.get("invert_y", False)
 
@@ -100,52 +93,77 @@ def gwrite(document: vp.Document, filename: str, profile: str):
     if invert_x or invert_y:
         document = invert_axis(document, invert_x, invert_y)
 
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         if header is not None:
-            f.write(header)
+            f.write(header.format(filename=filename))
         last_x = 0
         last_y = 0
-        for layer in document.layers.values():
+        xx = 0
+        yy = 0
+        for layer_index, layer in enumerate(document.layers.values()):
             if prelayer is not None:
-                f.write(prelayer)
-            for p in layer:
+                f.write(prelayer.format(index=layer_index))
+            for p_index, p in enumerate(layer):
                 m = p * scale
                 first = True
                 if preblock is not None:
-                    f.write(preblock)
-                for v in m:
+                    f.write(preblock.format(index=p_index))
+                for v_index, v in enumerate(m):
                     x = v.real
-                    if negate_x:
-                        x = -x
                     y = v.imag
-                    if negate_y:
-                        y = -y
-                    if relative:
-                        dx = x - last_x
-                        dy = y - last_y
-                        if first:
-                            if move is not None:
-                                f.write(move % (dx, dy))
-                            first = False
-                        else:
-                            if line is not None:
-                                f.write(line % (dx, dy))
+                    dx = x - last_x
+                    dy = y - last_y
+                    idx = int(round(x - xx))
+                    idy = int(round(y - yy))
+                    xx += idx
+                    yy += idy
+                    if first:
+                        if move is not None:
+                            f.write(
+                                move.format(
+                                    x=x,
+                                    y=y,
+                                    dx=dx,
+                                    dy=dy,
+                                    _x=-x,
+                                    _y=-y,
+                                    _dx=dx,
+                                    _dy=dy,
+                                    ix=xx,
+                                    iy=yy,
+                                    idx=idx,
+                                    idy=idy,
+                                    index=v_index,
+                                )
+                            )
+                        first = False
                     else:
-                        if first:
-                            if move is not None:
-                                f.write(move % (x, y))
-                            first = False
-                        else:
-                            if line is not None:
-                                f.write(line % (x, y))
+                        if line is not None:
+                            f.write(
+                                line.format(
+                                    x=x,
+                                    y=y,
+                                    dx=dx,
+                                    dy=dy,
+                                    _x=-x,
+                                    _y=-y,
+                                    _dx=dx,
+                                    _dy=dy,
+                                    ix=xx,
+                                    iy=yy,
+                                    idx=idx,
+                                    idy=idy,
+                                    index=v_index,
+                                )
+                            )
                     last_x = x
                     last_y = y
                 if postblock is not None:
-                    f.write(postblock)
+                    f.write(postblock.format(index=p_index))
             if postlayer is not None:
-                f.write(postlayer)
+                f.write(postlayer.format(index=layer_index))
         if footer is not None:
-            f.write(footer)
+            f.write(footer.format(filename=filename))
 
     return document
 

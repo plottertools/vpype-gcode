@@ -1,37 +1,48 @@
 [gwrite.ninja]
 header = "G20\nG17\nG90\n"
-move =  "M380\nG00 X%.4f Y%.4f\nM381\n"
-line = "G01 X%.4f Y%.4f\n"
+move =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
+line = "G01 X{x:.4f} Y{y:.4f}\n"
 footer = "M2\n"
 unit = "mm"
 
 [gwrite.gcode]
 header = "G20\nG17\nG90\n"
-move = "G00 X%.4f Y%.4f\n"
-line = "G01 X%.4f Y%.4f\n"
+move = "G00 X{x:.4f} Y{y:.4f}\n"
+line = "G01 X{x:.4f} Y{y:.4f}\n"
 footer = "M2\n"
 unit = "mm"
 
 [gwrite.gcode_relative]
 header = "G20\nG17\nG91\n"
-move = "G00 X%.4f Y%.4f\n"
-line = "G01 X%.4f Y%.4f\n"
+move = "G00 X{dx:.4f} Y{dy:.4f}\n"
+line = "G01 X{dx:.4f} Y{dy:.4f}\n"
 footer = "M2\n"
-relative = true
 unit = "mm"
 
 [gwrite.csv]
 header = "#Operation, X-value, Y-value\n"
-move = "Move, %f, %f\n"
-line = "Line-to, %f, %f\n"
+move = "Move, {x:f}, {x:f}\n"
+line = "Line-to, {x:f}, {x:f}\n"
 
 
 [gwrite.json]
-header = "{\n"
-footer = "}\n"
-prelayer = "\t\"Layer\": {\n"
+header = "{{\n"
+footer = "}}\n"
+prelayer = "\t\"Layer\": {{\n"
 preblock = "\t\t\"Block\": [\n"
-move = "\t\t{\n\t\t\t\"X\": %d,\n\t\t\t\"Y\": %d\n\t\t}"
-line = ",\n\t\t{\n\t\t\t\"X\": %d,\n\t\t\t\"Y\": %d\n\t\t}"
+move = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}}"
+line = ",\n\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}}"
 postblock = "\n\t\t],\n"
-postlayer = "\t},\n"
+postlayer = "\t}},\n"
+
+[gwrite.isvg]
+header = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink">
+"""
+footer = "</svg>"
+prelayer = '<g fill="none" stroke="black">'
+preblock = '<path d="M '
+move = "{ix:d} {iy:d} l"
+line = "{idx:d} {idy:d} "
+postblock = '""/>'
+postlayer = "</g"
