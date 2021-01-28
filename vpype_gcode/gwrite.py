@@ -74,14 +74,16 @@ def gwrite(document: vp.Document, filename: str, profile: str):
 
     # Read the config for the profile from the main vpype
     config = gwrite_config[profile]
-
     header = config.get("header", None)
-    move = config.get("move", None)
-    line = config.get("line", None)
-    preblock = config.get("preblock", None)
-    postblock = config.get("postblock", None)
+    firstsegment = config.get("firstsegment", None)
+    segment = config.get("segment", None)
+    lastsegment = config.get("lastsegment", None)
     prelayer = config.get("prelayer", None)
     postlayer = config.get("postlayer", None)
+    layerjoin = config.get("layerjoin", None)
+    preline = config.get("preline", None)
+    postline = config.get("postline", None)
+    linejoin = config.get("linejoin", None)
     footer = config.get("footer", None)
     unit = config.get("unit", "mm")
 
@@ -100,68 +102,58 @@ def gwrite(document: vp.Document, filename: str, profile: str):
         last_y = 0
         xx = 0
         yy = 0
+        lastlayer_index = len(document.layers.values()) - 1
         for layer_index, layer in enumerate(document.layers.values()):
             if prelayer is not None:
                 f.write(prelayer.format(index=layer_index))
-            for p_index, p in enumerate(layer):
-                m = p * scale
-                first = True
-                if preblock is not None:
-                    f.write(preblock.format(index=p_index))
-                for v_index, v in enumerate(m):
-                    x = v.real
-                    y = v.imag
+            lastlines_index = len(layer) - 1
+            for lines_index, lines in enumerate(layer):
+                lines_scaled = lines * scale
+                if preline is not None:
+                    f.write(preline.format(index=lines_index))
+                lastsegment_index = len(lines_scaled) - 1
+                for segment_index, seg in enumerate(lines_scaled):
+                    x = seg.real
+                    y = seg.imag
                     dx = x - last_x
                     dy = y - last_y
                     idx = int(round(x - xx))
                     idy = int(round(y - yy))
                     xx += idx
                     yy += idy
-                    if first:
-                        if move is not None:
-                            f.write(
-                                move.format(
-                                    x=x,
-                                    y=y,
-                                    dx=dx,
-                                    dy=dy,
-                                    _x=-x,
-                                    _y=-y,
-                                    _dx=dx,
-                                    _dy=dy,
-                                    ix=xx,
-                                    iy=yy,
-                                    idx=idx,
-                                    idy=idy,
-                                    index=v_index,
-                                )
-                            )
-                        first = False
+                    if firstsegment is not None and segment_index == 0:
+                        seg_write = firstsegment
+                    elif lastsegment is not None and segment_index == lastsegment_index:
+                        seg_write = lastsegment
                     else:
-                        if line is not None:
-                            f.write(
-                                line.format(
-                                    x=x,
-                                    y=y,
-                                    dx=dx,
-                                    dy=dy,
-                                    _x=-x,
-                                    _y=-y,
-                                    _dx=dx,
-                                    _dy=dy,
-                                    ix=xx,
-                                    iy=yy,
-                                    idx=idx,
-                                    idy=idy,
-                                    index=v_index,
-                                )
-                            )
+                        seg_write = segment
+                    f.write(
+                        seg_write.format(
+                            x=x,
+                            y=y,
+                            dx=dx,
+                            dy=dy,
+                            _x=-x,
+                            _y=-y,
+                            _dx=dx,
+                            _dy=dy,
+                            ix=xx,
+                            iy=yy,
+                            idx=idx,
+                            idy=idy,
+                            index=segment_index,
+                        )
+                    )
                     last_x = x
                     last_y = y
-                if postblock is not None:
-                    f.write(postblock.format(index=p_index))
+                if postline is not None:
+                    f.write(postline.format(index=lines_index))
+                if linejoin is not None and lines_index != lastlines_index:
+                    f.write(linejoin)
             if postlayer is not None:
                 f.write(postlayer.format(index=layer_index))
+            if layerjoin is not None and layer_index != lastlayer_index:
+                f.write(layerjoin)
         if footer is not None:
             f.write(footer.format(filename=filename))
 
