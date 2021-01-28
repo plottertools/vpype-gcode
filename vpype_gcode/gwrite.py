@@ -6,6 +6,7 @@ from vpype.layers import LayerType
 # Load the default config
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
+
 def invert_axis(
     document: vp.Document,
     invert_x: bool,
@@ -35,8 +36,8 @@ def invert_axis(
         lc.scale(-1 if invert_x else 1, -1 if invert_y else 1)
         lc.translate(origin[0], origin[1])
 
-
     return document
+
 
 @click.command()
 @click.argument('filename', type=click.Path(exists=False))
@@ -97,7 +98,7 @@ def gwrite(document: vp.Document, filename: str, profile: str):
     scale = 1 / vp.convert_length(unit)
 
     if invert_x or invert_y:
-      document = invert_axis(document, invert_x, invert_y)
+        document = invert_axis(document, invert_x, invert_y)
 
     with open(filename, 'w') as f:
         if header is not None:
