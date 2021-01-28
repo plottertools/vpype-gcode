@@ -44,5 +44,5 @@ prelayer = '<g fill="none" stroke="black">'
 preblock = '<path d="M '
 move = "{ix:d} {iy:d} l"
 line = "{idx:d} {idy:d} "
-postblock = '""/>'
-postlayer = "</g"
+postblock = '"/>'
+postlayer = "</g>"
