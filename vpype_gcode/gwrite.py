@@ -127,23 +127,24 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     seg_write = segment_last
                 else:
                     seg_write = segment
-                output.write(
-                    seg_write.format(
-                        x=x,
-                        y=y,
-                        dx=dx,
-                        dy=dy,
-                        _x=-x,
-                        _y=-y,
-                        _dx=-dx,
-                        _dy=-dy,
-                        ix=xx,
-                        iy=yy,
-                        idx=idx,
-                        idy=idy,
-                        index=segment_index,
+                if seg_write is not None:
+                    output.write(
+                        seg_write.format(
+                            x=x,
+                            y=y,
+                            dx=dx,
+                            dy=dy,
+                            _x=-x,
+                            _y=-y,
+                            _dx=-dx,
+                            _dy=-dy,
+                            ix=xx,
+                            iy=yy,
+                            idx=idx,
+                            idy=idy,
+                            index=segment_index,
+                        )
                     )
-                )
                 last_x = x
                 last_y = y
             if linecollection_end is not None:
