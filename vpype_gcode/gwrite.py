@@ -157,6 +157,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
             output.write(layer_join)
     if document_end is not None:
         output.write(document_end.format(filename=filename))
+    output.flush()
 
     return document
 
