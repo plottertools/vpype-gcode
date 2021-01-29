@@ -1,6 +1,7 @@
 import click
 from pathlib import Path
 import vpype as vp
+import typing
 from vpype.layers import LayerType
 
 # Load the default config
@@ -36,7 +37,7 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
 
 
 @click.command()
-@click.argument("filename", type=click.Path(exists=False))
+@click.argument("output", type=click.File("w"))
 @click.option(
     "-p",
     "--profile",
@@ -46,7 +47,7 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
     help="gcode writer profile from the vpype configuration file subsection 'gwrite'",
 )
 @vp.global_processor
-def gwrite(document: vp.Document, filename: str, profile: str):
+def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     gwrite_config = vp.CONFIG_MANAGER.config["gwrite"]
 
     # If no profile was provided, try to use a default
@@ -94,68 +95,67 @@ def gwrite(document: vp.Document, filename: str, profile: str):
 
     if invert_x or invert_y:
         document = invert_axis(document, invert_x, invert_y)
-
-    with open(filename, "w") as f:
-        if document_start is not None:
-            f.write(document_start.format(filename=filename))
-        last_x = 0
-        last_y = 0
-        xx = 0
-        yy = 0
-        lastlayer_index = len(document.layers.values()) - 1
-        for layer_index, layer in enumerate(document.layers.values()):
-            if layer_start is not None:
-                f.write(layer_start.format(index=layer_index))
-            lastlines_index = len(layer) - 1
-            for lines_index, lines in enumerate(layer):
-                lines_scaled = lines * scale
-                if linecollection_start is not None:
-                    f.write(linecollection_start.format(index=lines_index))
-                segment_last_index = len(lines_scaled) - 1
-                for segment_index, seg in enumerate(lines_scaled):
-                    x = seg.real
-                    y = seg.imag
-                    dx = x - last_x
-                    dy = y - last_y
-                    idx = int(round(x - xx))
-                    idy = int(round(y - yy))
-                    xx += idx
-                    yy += idy
-                    if segment_first is not None and segment_index == 0:
-                        seg_write = segment_first
-                    elif segment_last is not None and segment_index == segment_last_index:
-                        seg_write = segment_last
-                    else:
-                        seg_write = segment
-                    f.write(
-                        seg_write.format(
-                            x=x,
-                            y=y,
-                            dx=dx,
-                            dy=dy,
-                            _x=-x,
-                            _y=-y,
-                            _dx=-dx,
-                            _dy=-dy,
-                            ix=xx,
-                            iy=yy,
-                            idx=idx,
-                            idy=idy,
-                            index=segment_index,
-                        )
+    filename = output.name
+    if document_start is not None:
+        output.write(document_start.format(filename=filename))
+    last_x = 0
+    last_y = 0
+    xx = 0
+    yy = 0
+    lastlayer_index = len(document.layers.values()) - 1
+    for layer_index, layer in enumerate(document.layers.values()):
+        if layer_start is not None:
+            output.write(layer_start.format(index=layer_index))
+        lastlines_index = len(layer) - 1
+        for lines_index, lines in enumerate(layer):
+            lines_scaled = lines * scale
+            if linecollection_start is not None:
+                output.write(linecollection_start.format(index=lines_index))
+            segment_last_index = len(lines_scaled) - 1
+            for segment_index, seg in enumerate(lines_scaled):
+                x = seg.real
+                y = seg.imag
+                dx = x - last_x
+                dy = y - last_y
+                idx = int(round(x - xx))
+                idy = int(round(y - yy))
+                xx += idx
+                yy += idy
+                if segment_first is not None and segment_index == 0:
+                    seg_write = segment_first
+                elif segment_last is not None and segment_index == segment_last_index:
+                    seg_write = segment_last
+                else:
+                    seg_write = segment
+                output.write(
+                    seg_write.format(
+                        x=x,
+                        y=y,
+                        dx=dx,
+                        dy=dy,
+                        _x=-x,
+                        _y=-y,
+                        _dx=-dx,
+                        _dy=-dy,
+                        ix=xx,
+                        iy=yy,
+                        idx=idx,
+                        idy=idy,
+                        index=segment_index,
                     )
-                    last_x = x
-                    last_y = y
-                if linecollection_end is not None:
-                    f.write(linecollection_end.format(index=lines_index))
-                if linecollection_join is not None and lines_index != lastlines_index:
-                    f.write(linecollection_join)
-            if layer_end is not None:
-                f.write(layer_end.format(index=layer_index))
-            if layer_join is not None and layer_index != lastlayer_index:
-                f.write(layer_join)
-        if document_end is not None:
-            f.write(document_end.format(filename=filename))
+                )
+                last_x = x
+                last_y = y
+            if linecollection_end is not None:
+                output.write(linecollection_end.format(index=lines_index))
+            if linecollection_join is not None and lines_index != lastlines_index:
+                output.write(linecollection_join)
+        if layer_end is not None:
+            output.write(layer_end.format(index=layer_index))
+        if layer_join is not None and layer_index != lastlayer_index:
+            output.write(layer_join)
+    if document_end is not None:
+        output.write(document_end.format(filename=filename))
 
     return document
 

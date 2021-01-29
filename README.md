@@ -14,7 +14,7 @@ Gcode vpype plugin. Write gcode files for the vpype pipeline. The output format 
 # Usage
 
 ```
-Usage: vpype gwrite [OPTIONS] FILENAME
+Usage: vpype gwrite [OPTIONS] OUTPUT
 
 Options:
   -p, --profile TEXT  gcode writer profile from the vpype configuration file
