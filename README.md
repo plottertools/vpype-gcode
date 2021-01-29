@@ -172,7 +172,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
 ```
 ## Default Profile
 To prevent having to provide the profile on every invocation of the gcode plugin, you can define a default profile which will be used when no other profile is provided on the command line. You can do so by setting the `default_profile` configuration variable inside the `gcode` section of the vpype configuration file:
-```
+```toml
 [gcode]
 default_profile = "gcode"
 ```
@@ -188,7 +188,7 @@ Create a grid of circles, then we are `gwrite` using the `ninja` profile:
 
 ## Convert SVG -> CSV
 The `csv` profile is bundled with this package and defined as follows:
-```
+```toml
 [gwrite.csv]
 document_start = "#Operation, X-value, Y-value\n"
 segment_first = "Move, %f, %f\n"
