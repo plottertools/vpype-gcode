@@ -28,12 +28,12 @@ segment_last = "Stop, {x:f}, {x:f}\n"
 [gwrite.json]
 document_start = "{{"
 document_end = "}}\n"
-linecollection_join = ","
+line_join = ","
 layer_join = ","
 layer_start = "\n\t\"Layer\": {{"
 layer_end = "\t}}\n"
-linecollection_start = "\n\t\t\"LineCollection{index:d}\": [\n"
-linecollection_end = "\n\t\t]"
+line_start = "\n\t\t\"Line{index:d}\": [\n"
+line_end = "\n\t\t]"
 segment = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}},\n"
 segment_last = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}}"
 
@@ -43,8 +43,8 @@ document_start = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 """
 document_end = "</svg>"
 layer_start = '<g fill="none" stroke="black">'
-linecollection_start = '<path d="M '
+line_start = '<path d="M '
 segment_first = "{ix:d} {iy:d} l"
 segment = "{idx:d} {idy:d} "
-linecollection_end = '"/>'
+line_end = '"/>'
 layer_end = "</g>"

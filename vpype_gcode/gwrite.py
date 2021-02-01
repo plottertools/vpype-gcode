@@ -80,9 +80,9 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     layer_start = config.get("layer_start", None)
     layer_end = config.get("layer_end", None)
     layer_join = config.get("layer_join", None)
-    linecollection_start = config.get("linecollection_start", None)
-    linecollection_end = config.get("linecollection_end", None)
-    linecollection_join = config.get("linecollection_join", None)
+    line_start = config.get("line_start", None)
+    line_end = config.get("line_end", None)
+    line_join = config.get("line_join", None)
     segment_first = config.get("segment_first", None)
     segment = config.get("segment", None)
     segment_last = config.get("segment_last", None)
@@ -109,8 +109,8 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         lastlines_index = len(layer) - 1
         for lines_index, lines in enumerate(layer):
             lines_scaled = lines * scale
-            if linecollection_start is not None:
-                output.write(linecollection_start.format(index=lines_index))
+            if line_start is not None:
+                output.write(line_start.format(index=lines_index))
             segment_last_index = len(lines_scaled) - 1
             for segment_index, seg in enumerate(lines_scaled):
                 x = seg.real
@@ -147,10 +147,10 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     )
                 last_x = x
                 last_y = y
-            if linecollection_end is not None:
-                output.write(linecollection_end.format(index=lines_index))
-            if linecollection_join is not None and lines_index != lastlines_index:
-                output.write(linecollection_join)
+            if line_end is not None:
+                output.write(line_end.format(index=lines_index))
+            if line_join is not None and lines_index != lastlines_index:
+                output.write(line_join)
         if layer_end is not None:
             output.write(layer_end.format(index=layer_index))
         if layer_join is not None and layer_index != lastlayer_index:
