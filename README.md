@@ -48,7 +48,7 @@ unit = "mm"
 invert_y = true
 document_start = "M3 G21\n"
 layer_start = "(Start Layer)\n"
-linecollection_start = "(Start Block)\n"
+line_start = "(Start Block)\n"
 segment_first = """G00 Z5
 G00 X{x:.4f}f Y{y:.4f}
 M3 S1000
@@ -56,7 +56,7 @@ G4 P0.3
 G01 Z1 F3500
 """
 segment = """G01 X{x:.4f} Y{y:.4f} Z1\n"""
-linecollection_end = """G00 Z 5.0000
+line_end = """G00 Z 5.0000
 M5 S0
 G4 P0.5\n"""
 document_end = """M5
@@ -79,20 +79,20 @@ All of the options below default to an empty text which means no output is gener
 - `layer_start`: Output to be generated before a layer is started
 - `layer_end`: Output to be generated after a layer is finished.
 - `layer_join`: Output to be generated between two layers.
-- `linecollection_start`: Output to be generated before a linecollection is started
-- `linecollection_end`: Output to be generated after a linecollection is finished.
-- `linecollection_join`: Output to be generated between two linecollections.
+- `line_start`: Output to be generated before a line is started
+- `line_end`: Output to be generated after a line is finished.
+- `line_join`: Output to be generated between two lines.
 - `segment_first`: Output to be generated at the first coordinate pair.
 - `segment_last`: Output to be generated at the last coordinate pair.
-- `segment`: Output to be generated to all subsequent coordinate pairs of a linecollection.
+- `segment`: Output to be generated to all subsequent coordinate pairs of a line.
 
 ### Segment formatting
 `gwrite` uses `.format()` encoding which means that data elements must be encasulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
 For example every element except `layer_join` and `segment_join` accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
 - `layer_start`: Accepts `index` the current layer number.
 - `layer_end`: Accepts `index` the current layer number.
-- `linecollection_start`: Accepts `index` the current linecollection number.
-- `linecollection_end`: Accepts `index` the current linecollection number.
+- `line_start`: Accepts `index` the current line number.
+- `line_end`: Accepts `index` the current line number.
   
 The segments accept a lot of values that may be useful statistics for various formats:
 * `index`: index of the particular coordinate pair. eg `{index:d}`
@@ -117,56 +117,56 @@ The gwrite command gives you access to write to a variety of formats that fit th
 ```
 <document_start>
   <layer_start>
-    <linecollection_start>
+    <line_start>
       <segment_first>
       <segment>
       <segment>
       <segment>
       <segment>
       <segment_last>
-    <linecollection_end>
-    <linecollection_start>
+    <line_end>
+    <line_start>
       <segment_first>
       <segment>
       <segment>
       <segment>
       <segment>
       <segment_last>
-    <linecollection_end>
-    <linecollection_start>
+    <line_end>
+    <line_start>
       <segment_first>
       <segment>
       <segment>
       <segment>
       <segment>
       <segment_last>
-    <linecollection_end>
+    <line_end>
  <layer_end>
  <layer_start>
-    <linecollection_start>
+    <line_start>
       <segment_first>
       <segment>
       <segment>
       <segment>
       <segment>
       <segment_last>
-    <linecollection_end>
-    <linecollection_start>
+    <line_end>
+    <line_start>
       <segment_first>
       <segment>
       <segment>
       <segment>
       <segment>
       <segment_last>
-    <linecollection_end>
-    <linecollection_start>
+    <line_end>
+    <line_start>
       <segment_first>
       <segment>
       <segment>
       <segment>
       <segment>
       <segment_last>
-    <linecollection_end>
+    <line_end>
  <layer_end>
 <document_end>
 ```
@@ -230,12 +230,12 @@ The `json` profile is already bundled with this package. It is defined as follow
 [gwrite.json]
 document_start = "{{"
 document_end = "}}\n"
-linecollection_join = ","
+line_join = ","
 layer_join = ","
 layer_start = "\n\t\"Layer\": {{"
 layer_end = "\t}}\n"
-linecollection_start = "\n\t\t\"LineCollection{index:d}\": [\n"
-linecollection_end = "\n\t\t]"
+line_start = "\n\t\t\"line{index:d}\": [\n"
+line_end = "\n\t\t]"
 segment = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}},\n"
 segment_last = "\t\t{{\n\t\t\t\"X\": {ix:d},\n\t\t\t\"Y\": {iy:d}\n\t\t}}"
 ```
@@ -245,7 +245,7 @@ Using this profile, you can generate JSON for the rectangle:
 ```json
 {
 	"Layer": {
-		"LineCollection0": [
+		"Line0": [
 		{
 			"X": 0,
 			"Y": 0
