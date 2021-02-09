@@ -23,6 +23,12 @@ Options:
   --help              Show this message and exit.
 ```
 
+# Goals
+The goal of this project is to allow all hobbyists needing gcode writing to have everything they need to create the gcode their projects requires. The secondary goal is to get this project basically wholesale assumed into vpype proper. The writer is so open and modular that it can write everything from svg to json to gcode, the hope was to get this sort of thing added to vpype.
+
+# Philosophy
+Breaking changes are fine. Anything that will make this code more likely to end up in vpype properly and this particular library getting deprecated will be highly likley to be done.
+
 # Profiles
 This plugin supports different output profiles which configure the way the resulting output is formatted. Output profiles are flexible in a way that they can also be used to generate non gcode files, i.e. JSON or CSV files. 
 
@@ -273,3 +279,6 @@ Using this profile, you can generate JSON for the rectangle:
 Which is valid JSON.
 
 
+# Thanks
+* abey76 - Helped with advice that largely pushes us towards the integration goals as well as his very solid suggestion to use .format() which greatly expands the expected formats.
+* theomega - Basically rewrote the thing into the dapper codebase you see today. Rather than the 4 hours I figured I'd kill on this.
