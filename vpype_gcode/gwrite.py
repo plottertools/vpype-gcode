@@ -9,30 +9,6 @@ import vpype as vp
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
-def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
-    """Inverts none, one or both axis of the document.
-
-    This applies a relative scale operation with factors of 1 or -1
-    on the two axis to all layers. The inversion happens relative to
-    the center of the bounds.
-    """
-
-    bounds = document.bounds()
-    if not bounds:
-        raise ValueError("no geometry available, cannot compute origin")
-
-    origin = (
-        0.5 * (bounds[0] + bounds[2]),
-        0.5 * (bounds[1] + bounds[3]),
-    )
-
-    document.translate(-origin[0], -origin[1])
-    document.scale(-1 if invert_x else 1, -1 if invert_y else 1)
-    document.translate(origin[0], origin[1])
-
-    return document
-
-
 @click.command()
 @click.argument("output", type=click.File("w"))
 @click.option(

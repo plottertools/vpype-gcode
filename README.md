@@ -51,7 +51,6 @@ Inside the configuration file you can specify a new output profile using the fol
 ```toml
 [gwrite.my_own_plotter]
 unit = "mm"
-invert_y = true
 document_start = "M3 G21\n"
 layer_start = "(Start Layer)\n"
 line_start = "(Start Block)\n"
