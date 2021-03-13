@@ -1,8 +1,9 @@
-import click
-from pathlib import Path
-import vpype as vp
+import copy
 import typing
-from vpype.layers import LayerType
+from pathlib import Path
+
+import click
+import vpype as vp
 
 # Load the default config
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
@@ -16,9 +17,7 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
     the center of the bounds.
     """
 
-    layer_ids = vp.multiple_to_layer_ids(LayerType.ALL, document)
-    bounds = document.bounds(layer_ids)
-
+    bounds = document.bounds()
     if not bounds:
         raise ValueError("no geometry available, cannot compute origin")
 
@@ -27,11 +26,9 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
         0.5 * (bounds[1] + bounds[3]),
     )
 
-    for vid in layer_ids:
-        lc = document[vid]
-        lc.translate(-origin[0], -origin[1])
-        lc.scale(-1 if invert_x else 1, -1 if invert_y else 1)
-        lc.translate(origin[0], origin[1])
+    document.translate(-origin[0], -origin[1])
+    document.scale(-1 if invert_x else 1, -1 if invert_y else 1)
+    document.translate(origin[0], origin[1])
 
     return document
 
@@ -88,13 +85,19 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     segment_last = config.get("segment_last", None)
     unit = config.get("unit", "mm")
 
-    invert_x = config.get("invert_x", False)
-    invert_y = config.get("invert_y", False)
+    offset_x = config.get("offset_x", 0.0)
+    offset_y = config.get("offset_y", 0.0)
+    scale_x = config.get("scale_x", 1.0)
+    scale_y = config.get("scale_y", 1.0)
 
-    scale = 1 / vp.convert_length(unit)
+    # transform the document according to the desired parameters
+    orig_document = document
+    document = copy.deepcopy(document)  # do NOT affect the pipeline's document
+    unit_scale = vp.convert_length(unit)
+    document.scale(scale_x / unit_scale, scale_y / unit_scale)
+    document.translate(offset_x, offset_y)
 
-    if invert_x or invert_y:
-        document = invert_axis(document, invert_x, invert_y)
+    # process file
     filename = output.name
     if document_start is not None:
         output.write(document_start.format(filename=filename))
@@ -107,12 +110,11 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         if layer_start is not None:
             output.write(layer_start.format(index=layer_index))
         lastlines_index = len(layer) - 1
-        for lines_index, lines in enumerate(layer):
-            lines_scaled = lines * scale
+        for lines_index, line in enumerate(layer):
             if line_start is not None:
                 output.write(line_start.format(index=lines_index))
-            segment_last_index = len(lines_scaled) - 1
-            for segment_index, seg in enumerate(lines_scaled):
+            segment_last_index = len(line) - 1
+            for segment_index, seg in enumerate(line):
                 x = seg.real
                 y = seg.imag
                 dx = x - last_x
@@ -160,7 +162,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     output.flush()
     output.close()
 
-    return document
+    return orig_document
 
 
-gwrite.help_group = "Gcode"
+gwrite.help_group = "Output"

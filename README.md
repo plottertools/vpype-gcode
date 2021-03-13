@@ -74,9 +74,12 @@ You can use the following options inside a profile. You only need to provide the
 
 
 ### Output Control
+These parameters define the transformation between *vpype*'s and the target's coordinate systems. *vpype* coordinate is based on CSS pixels (1/96th of an inch), has origin at the top-left corner with positive X value extending right and positive Y values extending downward.
 - `unit`:  Defines the [vpype unit](https://vpype.readthedocs.io/en/stable/fundamentals.html#units) which should be used in the output format. Defaults to `mm`.
-- `invert_x`: Inverts/Mirrors the output relative to the middle point of the x axis when set to `true`. Defaults to `false`.
-- `invert_y`: Inverts/Mirrors the output relative to the middle point of the y axis when set to `true`. Defaults to `false`. This option can be helpful if your output does not have the x=0, y=0 coordinates at the top left (the default) but instead at the bottom left.
+- `scale_x`: Apply a scaling factor on the X axis. Use `-1` to invert the direction.
+- `scale_y`: Apply a scaling factor on the Y axis. Use `-1` to invert the direction.
+- `offset_x`: Apply an offset to the X axis. This offset is expressed in the unit defined by `unit`.
+- `offset_y`: Apply an offset to the Y axis. This offset is expressed in the unit defined by `unit`.
 
 ### Output Format
 All of the options below default to an empty text which means no output is generated. However, if `segment_first` or `segment_last` is omitted the code from `segment` is used. If there is only one segment. `segment_first` takes priority over `segment_last`.
