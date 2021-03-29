@@ -27,7 +27,7 @@ Options:
 The goal of this project is to allow all hobbyists needing gcode writing to have everything they need to create the gcode their projects requires. The secondary goal is to get this project basically wholesale assumed into vpype proper. The writer is so open and modular that it can write everything from svg to json to gcode, the hope was to get this sort of thing added to vpype.
 
 # Philosophy
-Breaking changes are fine. Anything that will make this code more likely to end up in vpype properly and this particular library getting deprecated will be highly likley to be done.
+Breaking changes are fine. Anything that will make this code more likely to end up in vpype properly and this particular library getting deprecated will be highly likely to be done.
 
 # Profiles
 This plugin supports different output profiles which configure the way the resulting output is formatted. Output profiles are flexible in a way that they can also be used to generate non gcode files, i.e. JSON or CSV files. 
@@ -95,7 +95,7 @@ All of the options below default to an empty text which means no output is gener
 - `segment`: Output to be generated to all subsequent coordinate pairs of a line.
 
 ### Segment formatting
-`gwrite` uses `.format()` encoding which means that data elements must be encasulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
+`gwrite` uses `.format()` encoding which means that data elements must be encapsulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
 For example every element except `layer_join` and `segment_join` accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
 - `layer_start`: Accepts `index` the current layer number.
 - `layer_end`: Accepts `index` the current layer number.
