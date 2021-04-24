@@ -3,7 +3,7 @@ Vpype plugin to generate gcode and other text output.
 See: https://github.com/abey79/vpype
 
 
-Gcode vpype plugin. Write gcode files for the vpype pipeline. The output format can be customized by the user heavily to an extend that you can also output non gcode ascii text files. 
+Gcode vpype plugin. Write gcode files for the vpype pipeline. The output format can be customized by the user heavily to an extent that you can also output non gcode ascii text files. 
 
 * `gwrite` write geometries as gcode to a file
 
@@ -81,13 +81,13 @@ These parameters define the transformation between *vpype*'s and the target's co
 - `offset_y`: Apply an offset to the Y axis. This offset is expressed in the unit defined by `unit`.
 
 ### Output Format
-All of the options below default to an empty text which means no output is generated. However, if `segment_first` or `segment_last` is omitted the code from `segment` is used. If there is only one segment. `segment_first` takes priority over `segment_last`.
-- `document_start`: Output to be generated at the start of the file as a document_start
-- `document_end`: Output to be generated at the end of the file as a document_end
-- `layer_start`: Output to be generated before a layer is started
+All of the options below default to an empty text which means no output is generated. However, if `segment_first` or `segment_last` is omitted the code from `segment` is used. If there is only one segment, `segment_first` takes priority over `segment_last`.
+- `document_start`: Output to be generated at the start of the file as a document_start.
+- `document_end`: Output to be generated at the end of the file as a document_end.
+- `layer_start`: Output to be generated before a layer is started.
 - `layer_end`: Output to be generated after a layer is finished.
 - `layer_join`: Output to be generated between two layers.
-- `line_start`: Output to be generated before a line is started
+- `line_start`: Output to be generated before a line is started.
 - `line_end`: Output to be generated after a line is finished.
 - `line_join`: Output to be generated between two lines.
 - `segment_first`: Output to be generated at the first coordinate pair.
@@ -97,8 +97,8 @@ All of the options below default to an empty text which means no output is gener
 ### Segment formatting
 `gwrite` uses `.format()` encoding which means that data elements must be encapsulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
 For example every element except `layer_join` and `segment_join` accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
-- `layer_start`: Accepts `index` the current layer number.
-- `layer_end`: Accepts `index` the current layer number.
+- `layer_start`: Accepts `index` the current layer number and `layer_id` as vpype layer ID.
+- `layer_end`: Accepts `index` the current layer number and `layer_id` as vpype layer ID.
 - `line_start`: Accepts `index` the current line number.
 - `line_end`: Accepts `index` the current line number.
   
