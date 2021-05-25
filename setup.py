@@ -11,7 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Tatarize",
     author_email="tatarize@gmail.com",
-    url="https://github.com/tatarize/vpype-gcode/",
+    url="https://github.com/plottertools/vpype-gcode/",
     packages=["vpype_gcode"],
     classifiers=(
         "Programming Language :: Python :: 3.6",
