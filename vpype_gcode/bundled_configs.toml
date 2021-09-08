@@ -51,11 +51,11 @@ line_end = '"/>'
 layer_end = "</g>"
 
 [gwrite.ninja]
-document_start = "G20\nG17\nG90\n"
-segment_first =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
-segment = "G01 X{x:.4f} Y{y:.4f}\n"
-document_end = "M2\n"
-unit = "in"
+document_start = "G21\nG17\nG90\nG28\n"
+segment_first =  "G1 Z3 F10000\nG0 X{x:.4f} Y{y:.4f} F15000\nG1 Z6 F6000\n"
+segment = "G1 X{x:.4f} Y{y:.4f} F10000\n"
+document_end = "\nG1 Z0 F1000\nG1 X0 Y0 F1000\nM2\n"
+unit = "mm"
 
 [gwrite.step_motor]
 document_start = "$H (unlock by homing)\nG21 (unit is mm)\nG17 (work in XY plane)\n"
