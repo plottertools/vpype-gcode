@@ -1,9 +1,3 @@
-[gwrite.ninja]
-document_start = "G20\nG17\nG90\n"
-segment_first =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
-segment = "G01 X{x:.4f} Y{y:.4f}\n"
-document_end = "M2\n"
-unit = "in"
 
 [gwrite.gcode]
 document_start = "G20\nG17\nG90\n"
@@ -55,3 +49,24 @@ segment_first = "{ix:d} {iy:d} l"
 segment = "{idx:d} {idy:d} "
 line_end = '"/>'
 layer_end = "</g>"
+
+[gwrite.ninja]
+document_start = "G20\nG17\nG90\n"
+segment_first =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
+segment = "G01 X{x:.4f} Y{y:.4f}\n"
+document_end = "M2\n"
+unit = "in"
+
+[gwrite.step_motor]
+document_start = "$H (unlock by homing)\nG21 (unit is mm)\nG17 (work in XY plane)\n"
+segment_first =  "G91 Z-10 (pen up)\nG90 X{x:.4f} Y{y:.4f} (travel)\nG91 Z+13 (pen down)\nG90 (absolute position)\n"
+segment = "G01 X{x:.4f} Y{y:.4f} (draw)\n"
+document_end = "G91 Z-10 (pen up)\nG90 X0 Y0 (travel)\nM2 (end)\n"
+unit = "mm"
+
+[gwrite.step_motor_relative]
+document_start = "$H (unlock by homing)\nG21 (unit is mm)\nG17 (work in XY plane)\nG91 (relative position)\n"
+segment_first =  "G01 Z-10 (pen up)\nG00 X{dx:.4f} Y{dy:.4f} (travel)\nG01 Z+13 (pen down)\n"
+segment = "G01 X{dx:.4f} Y{dy:.4f} Z+0.01 (draw with minimum pressure)\n"
+document_end = "G01 Z-10 (pen up)\nG90 X0 Y0 (travel to origin)\nM2 (end)\n"
+unit = "mm"
