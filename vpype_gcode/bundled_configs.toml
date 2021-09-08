@@ -52,6 +52,7 @@ layer_end = "</g>"
 
 [gwrite.BBC-GL]
 document_start = ""
+layer_start = "F{index1:d}"
 segment_first = "C{x:.0f},{y:.0f};HK\n"
 segment = "C{x:.0f},{y:.0f};IK\n"
 document_end = "F0\n"
