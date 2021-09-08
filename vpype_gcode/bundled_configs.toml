@@ -3,10 +3,17 @@ document_start = "G20\nG17\nG90\n"
 segment_first =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
-unit = "mm"
+unit = "in"
 
 [gwrite.gcode]
 document_start = "G20\nG17\nG90\n"
+segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
+segment = "G01 X{x:.4f} Y{y:.4f}\n"
+document_end = "M2\n"
+unit = "in"
+
+[gwrite.gcodemm]
+document_start = "G21\nG17\nG90\n"
 segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
@@ -17,7 +24,7 @@ document_start = "G20\nG17\nG91\n"
 segment_first = "G00 X{dx:.4f} Y{dy:.4f}\n"
 segment = "G01 X{dx:.4f} Y{dy:.4f}\n"
 document_end = "M2\n"
-unit = "mm"
+unit = "in"
 
 [gwrite.csv]
 document_start = "#Operation, X-value, Y-value\n"
