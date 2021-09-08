@@ -85,11 +85,22 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     for layer_index, layer_id in enumerate(document.layers):
         layer = document.layers[layer_id]
         if layer_start is not None:
-            output.write(layer_start.format(index=layer_index, index1=layer_index+1, layer_id=layer_id))
+            output.write(
+                layer_start.format(
+                    index=layer_index, index1=layer_index + 1, layer_id=layer_id
+                )
+            )
         lastlines_index = len(layer) - 1
         for lines_index, line in enumerate(layer):
             if line_start is not None:
-                output.write(line_start.format(index=lines_index))
+                output.write(
+                    line_start.format(
+                        index=lines_index,
+                        index1=lines_index + 1,
+                        layer_index=layer_index,
+                        layer_index1=layer_index + 1,
+                    )
+                )
             segment_last_index = len(line) - 1
             for segment_index, seg in enumerate(line):
                 x = seg.real
@@ -127,11 +138,20 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                 last_x = x
                 last_y = y
             if line_end is not None:
-                output.write(line_end.format(index=lines_index))
+                output.write(
+                    line_end.format(
+                        index=lines_index,
+                        index1=lines_index + 1,
+                        layer_index=layer_index,
+                        layer_index1=layer_index + 1,
+                    )
+                )
             if line_join is not None and lines_index != lastlines_index:
                 output.write(line_join)
         if layer_end is not None:
-            output.write(layer_end.format(index=layer_index, index1=layer_index+1, layer_id=layer_id))
+            output.write(
+                layer_end.format(index=layer_index, index1=layer_index + 1, layer_id=layer_id)
+            )
         if layer_join is not None and layer_index != lastlayer_index:
             output.write(layer_join)
     if document_end is not None:
