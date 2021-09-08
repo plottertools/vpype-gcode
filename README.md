@@ -97,10 +97,10 @@ All of the options below default to an empty text which means no output is gener
 ### Segment formatting
 `gwrite` uses `.format()` encoding which means that data elements must be encapsulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
 For example every element except `layer_join` and `segment_join` accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
-- `layer_start`: Accepts `index` the current layer number and `layer_id` as vpype layer ID.
-- `layer_end`: Accepts `index` the current layer number and `layer_id` as vpype layer ID.
-- `line_start`: Accepts `index` the current line number.
-- `line_end`: Accepts `index` the current line number.
+- `layer_start`: Accepts `index` the current layer index starting from 0, `index1` the current layer number starting from 1, and `layer_id` as vpype layer ID.
+- `layer_end`: Accepts `index` the current layer index starting from 0, `index1` the current layer number starting from 1,  and `layer_id` as vpype layer ID.
+- `line_start`: Accepts `index` the current line number starting from 0, `index1` the current line number starting from 1, and `layer_index`, `layer_index1`, and `layer_id` values for the current layer this line is within.
+- `line_end`: Accepts `index` the current line number starting from 0, `index1` the current line number starting from 1, and `layer_index`, `layer_index1`, and `layer_id` values for the current layer this line is within.
   
 The segments accept a lot of values that may be useful statistics for various formats:
 * `index`: index of the particular coordinate pair. eg `{index:d}`
