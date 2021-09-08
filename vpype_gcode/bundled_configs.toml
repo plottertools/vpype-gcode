@@ -1,12 +1,13 @@
-[gwrite.ninja]
-document_start = "G20\nG17\nG90\n"
-segment_first =  "M380\nG00 X{x:.4f} Y{y:.4f}\nM381\n"
-segment = "G01 X{x:.4f} Y{y:.4f}\n"
-document_end = "M2\n"
-unit = "mm"
 
 [gwrite.gcode]
 document_start = "G20\nG17\nG90\n"
+segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
+segment = "G01 X{x:.4f} Y{y:.4f}\n"
+document_end = "M2\n"
+unit = "in"
+
+[gwrite.gcodemm]
+document_start = "G21\nG17\nG90\n"
 segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
@@ -17,7 +18,7 @@ document_start = "G20\nG17\nG91\n"
 segment_first = "G00 X{dx:.4f} Y{dy:.4f}\n"
 segment = "G01 X{dx:.4f} Y{dy:.4f}\n"
 document_end = "M2\n"
-unit = "mm"
+unit = "in"
 
 [gwrite.csv]
 document_start = "#Operation, X-value, Y-value\n"
@@ -48,3 +49,34 @@ segment_first = "{ix:d} {iy:d} l"
 segment = "{idx:d} {idy:d} "
 line_end = '"/>'
 layer_end = "</g>"
+
+[gwrite.BBC-GL]
+document_start = ""
+layer_start = "F{index1:d}\n"
+segment_first = "C{x:.0f},{y:.0f};HK\n"
+segment = "C{x:.0f},{y:.0f};IK\n"
+document_end = "F0\n"
+scale_x = 10
+scale_y = 10
+unit = "mm"
+
+[gwrite.ninja]
+document_start = "G21\nG17\nG90\nG28\n"
+segment_first =  "G1 Z3 F10000\nG0 X{x:.4f} Y{y:.4f} F15000\nG1 Z6 F6000\n"
+segment = "G1 X{x:.4f} Y{y:.4f} F10000\n"
+document_end = "\nG1 Z0 F1000\nG1 X0 Y0 F1000\nM2\n"
+unit = "mm"
+
+[gwrite.step_motor]
+document_start = "$H (unlock by homing)\nG21 (unit is mm)\nG17 (work in XY plane)\n"
+segment_first =  "G91 Z-10 (pen up)\nG90 X{x:.4f} Y{y:.4f} (travel)\nG91 Z+13 (pen down)\nG90 (absolute position)\n"
+segment = "G01 X{x:.4f} Y{y:.4f} (draw)\n"
+document_end = "G91 Z-10 (pen up)\nG90 X0 Y0 (travel)\nM2 (end)\n"
+unit = "mm"
+
+[gwrite.step_motor_relative]
+document_start = "$H (unlock by homing)\nG21 (unit is mm)\nG17 (work in XY plane)\nG91 (relative position)\n"
+segment_first =  "G01 Z-10 (pen up)\nG00 X{dx:.4f} Y{dy:.4f} (travel)\nG01 Z+13 (pen down)\n"
+segment = "G01 X{dx:.4f} Y{dy:.4f} Z+0.01 (draw with minimum pressure)\n"
+document_end = "G01 Z-10 (pen up)\nG90 X0 Y0 (travel to origin)\nM2 (end)\n"
+unit = "mm"
