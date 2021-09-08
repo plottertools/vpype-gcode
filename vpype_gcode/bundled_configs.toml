@@ -50,6 +50,15 @@ segment = "{idx:d} {idy:d} "
 line_end = '"/>'
 layer_end = "</g>"
 
+[gwrite.BBC-GL]
+document_start = ""
+segment_first = "C{x:.0f},{y:.0f};HK\n"
+segment = "C{x:.0f},{y:.0f};IK\n"
+document_end = "F0\n"
+scale_x = 10
+scale_y = 10
+unit = "mm"
+
 [gwrite.ninja]
 document_start = "G21\nG17\nG90\nG28\n"
 segment_first =  "G1 Z3 F10000\nG0 X{x:.4f} Y{y:.4f} F15000\nG1 Z6 F6000\n"
