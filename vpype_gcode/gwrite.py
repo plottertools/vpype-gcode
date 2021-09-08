@@ -99,6 +99,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                         index1=lines_index + 1,
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
+                        layer_id=layer_id,
                     )
                 )
             segment_last_index = len(line) - 1
@@ -144,6 +145,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                         index1=lines_index + 1,
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
+                        layer_id=layer_id,
                     )
                 )
             if line_join is not None and lines_index != lastlines_index:
