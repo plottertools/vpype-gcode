@@ -97,6 +97,8 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     line_start.format(
                         index=lines_index,
                         index1=lines_index + 1,
+                        lines_index=lines_index,
+                        lines_index1=lines_index + 1,
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
                         layer_id=layer_id,
@@ -134,6 +136,11 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                             idx=idx,
                             idy=idy,
                             index=segment_index,
+                            lines_index=lines_index,
+                            lines_index1=lines_index + 1,
+                            layer_index=layer_index,
+                            layer_index1=layer_index + 1,
+                            layer_id=layer_id,
                         )
                     )
                 last_x = x
@@ -143,6 +150,8 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     line_end.format(
                         index=lines_index,
                         index1=lines_index + 1,
+                        lines_index=lines_index,
+                        lines_index1=lines_index + 1,
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
                         layer_id=layer_id,
