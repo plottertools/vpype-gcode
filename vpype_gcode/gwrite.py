@@ -87,7 +87,12 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         if layer_start is not None:
             output.write(
                 layer_start.format(
-                    index=layer_index, index1=layer_index + 1, layer_id=layer_id
+                    index=layer_index,
+                    index1=layer_index + 1,
+                    layer_index=layer_index,
+                    layer_index1=layer_index + 1,
+                    layer_id=layer_id,
+                    filename=filename,
                 )
             )
         lastlines_index = len(layer) - 1
@@ -97,9 +102,12 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     line_start.format(
                         index=lines_index,
                         index1=lines_index + 1,
+                        lines_index=lines_index,
+                        lines_index1=lines_index + 1,
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
                         layer_id=layer_id,
+                        filename=filename,
                     )
                 )
             segment_last_index = len(line) - 1
@@ -134,6 +142,15 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                             idx=idx,
                             idy=idy,
                             index=segment_index,
+                            index1=segment_index + 1,
+                            segment_index=segment_index,
+                            segment_index1=segment_index + 1,
+                            lines_index=lines_index,
+                            lines_index1=lines_index + 1,
+                            layer_index=layer_index,
+                            layer_index1=layer_index + 1,
+                            layer_id=layer_id,
+                            filename=filename,
                         )
                     )
                 last_x = x
@@ -143,16 +160,26 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     line_end.format(
                         index=lines_index,
                         index1=lines_index + 1,
+                        lines_index=lines_index,
+                        lines_index1=lines_index + 1,
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
                         layer_id=layer_id,
+                        filename=filename,
                     )
                 )
             if line_join is not None and lines_index != lastlines_index:
                 output.write(line_join)
         if layer_end is not None:
             output.write(
-                layer_end.format(index=layer_index, index1=layer_index + 1, layer_id=layer_id)
+                layer_end.format(
+                    index=layer_index,
+                    index1=layer_index + 1,
+                    layer_index=layer_index,
+                    layer_index1=layer_index + 1,
+                    layer_id=layer_id,
+                    filename=filename,
+                )
             )
         if layer_join is not None and layer_index != lastlayer_index:
             output.write(layer_join)
