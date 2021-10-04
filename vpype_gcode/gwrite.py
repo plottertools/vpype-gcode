@@ -92,6 +92,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     layer_index=layer_index,
                     layer_index1=layer_index + 1,
                     layer_id=layer_id,
+                    filename=filename,
                 )
             )
         lastlines_index = len(layer) - 1
@@ -106,6 +107,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
                         layer_id=layer_id,
+                        filename=filename,
                     )
                 )
             segment_last_index = len(line) - 1
@@ -148,6 +150,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                             layer_index=layer_index,
                             layer_index1=layer_index + 1,
                             layer_id=layer_id,
+                            filename=filename,
                         )
                     )
                 last_x = x
@@ -162,6 +165,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                         layer_index=layer_index,
                         layer_index1=layer_index + 1,
                         layer_id=layer_id,
+                        filename=filename,
                     )
                 )
             if line_join is not None and lines_index != lastlines_index:
@@ -174,6 +178,7 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     layer_index=layer_index,
                     layer_index1=layer_index + 1,
                     layer_id=layer_id,
+                    filename=filename,
                 )
             )
         if layer_join is not None and layer_index != lastlayer_index:
