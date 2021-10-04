@@ -141,6 +141,8 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                             idy=idy,
                             index=segment_index,
                             index1=segment_index + 1,
+                            segment_index=segment_index,
+                            segment_index1=segment_index + 1,
                             lines_index=lines_index,
                             lines_index1=lines_index + 1,
                             layer_index=layer_index,
