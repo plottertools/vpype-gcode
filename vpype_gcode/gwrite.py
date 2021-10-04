@@ -87,7 +87,11 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         if layer_start is not None:
             output.write(
                 layer_start.format(
-                    index=layer_index, index1=layer_index + 1, layer_id=layer_id
+                    index=layer_index,
+                    index1=layer_index + 1,
+                    layer_index=layer_index,
+                    layer_index1=layer_index + 1,
+                    layer_id=layer_id
                 )
             )
         lastlines_index = len(layer) - 1
@@ -161,7 +165,12 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                 output.write(line_join)
         if layer_end is not None:
             output.write(
-                layer_end.format(index=layer_index, index1=layer_index + 1, layer_id=layer_id)
+                layer_end.format(
+                    index=layer_index,
+                    index1=layer_index + 1,
+                    layer_index=layer_index,
+                    layer_index1=layer_index + 1,
+                    layer_id=layer_id)
             )
         if layer_join is not None and layer_index != lastlayer_index:
             output.write(layer_join)
