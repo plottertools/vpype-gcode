@@ -181,7 +181,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
 ## Default Profile
 To prevent having to provide the profile on every invocation of the gcode plugin, you can define a default profile which will be used when no other profile is provided on the command line. You can do so by setting the `default_profile` configuration variable inside the `gcode` section of the vpype configuration file:
 ```toml
-[gcode]
+[gwrite]
 default_profile = "gcode"
 ```
 
