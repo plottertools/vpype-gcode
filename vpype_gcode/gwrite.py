@@ -105,6 +105,12 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     document.scale(scale_x / unit_scale, scale_y / unit_scale)
     document.translate(offset_x, offset_y)
 
+    invert_x = config.get("invert_x", False)
+    invert_y = config.get("invert_y", False)
+    # transform the document according to inversion parameters
+    if invert_x or invert_y:
+        document = invert_axis(document, invert_x, invert_y)
+
     # process file
     filename = output.name
     if document_start is not None:
