@@ -79,6 +79,8 @@ These parameters define the transformation between *vpype*'s and the target's co
 - `scale_y`: Apply a scaling factor on the Y axis. Use `-1` to invert the direction.
 - `offset_x`: Apply an offset to the X axis. This offset is expressed in the unit defined by `unit`.
 - `offset_y`: Apply an offset to the Y axis. This offset is expressed in the unit defined by `unit`.
+- `invert_x`: Invert or mirror all points right-to-left without changing the position within the document space.
+- `invert_y`: Invert or mirror all points top-to-bottom without changing the position within the document space.
 
 ### Output Format
 All of the options below default to an empty text which means no output is generated. However, if `segment_first` or `segment_last` is omitted the code from `segment` is used. If there is only one segment, `segment_first` takes priority over `segment_last`.
@@ -119,6 +121,8 @@ The segments accept a lot of values that may be useful statistics for various fo
 
 Note: `idx` and `idy` are properly guarded against compounding fractional rounding errors. Moving 0.1 units 1000 times results in a location 100 units away and not zero.
 
+### Information Control
+- `info`: prints text after file is written to inform the user of said information
 
 ## Output structure
 The gwrite command gives you access to write to a variety of formats that fit the given outline. We're writing generic ascii. Since gcode can have more flavors than a Baskin Robbins™, it's best to simply draw broad strokes as to what ascii output should look like. Here we define the various elements without any regard to the gcode it will largely be producing.
@@ -284,3 +288,4 @@ Which is valid JSON.
 # Thanks
 * abey76 - Helped with advice that largely pushes us towards the integration goals as well as his very solid suggestion to use .format() which greatly expands the expected formats.
 * theomega - Basically rewrote the thing into the dapper codebase you see today. Rather than the 4 hours I figured I'd kill on this.
+* ithinkido - For his many insightful comments and determination to make this project as good as it can be.

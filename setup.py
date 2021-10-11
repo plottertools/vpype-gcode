@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setup(
     name="vpype-gcode",
-    version="0.9.1",
+    version="0.10.0",
     description="vpype gcode plugin",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -16,6 +16,11 @@ setup(
     classifiers=(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Environment :: Console",
+        "Topic :: Artistic Software",
+        "Topic :: Multimedia :: Graphics",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),

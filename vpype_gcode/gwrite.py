@@ -6,7 +6,31 @@ import click
 import vpype as vp
 
 # Load the default config
+
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
+
+
+def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
+    """Inverts none, one or both axis of the document.
+    This applies a relative scale operation with factors of 1 or -1
+    on the two axis to all layers. The inversion happens relative to
+    the center of the bounds.
+    """
+
+    bounds = document.bounds()
+    if not bounds:
+        return document
+
+    origin = (
+        0.5 * (bounds[0] + bounds[2]),
+        0.5 * (bounds[1] + bounds[3]),
+    )
+
+    document.translate(-origin[0], -origin[1])
+    document.scale(-1 if invert_x else 1, -1 if invert_y else 1)
+    document.translate(origin[0], origin[1])
+
+    return document
 
 
 @click.command()
@@ -21,6 +45,12 @@ vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.
 )
 @vp.global_processor
 def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
+    """
+    Write gcode or other ascii files for the vpype pipeline.
+
+    The output format can be customized by the user heavily to an extent that you can also output most known
+    non-gcode ascii text files.
+    """
     gwrite_config = vp.CONFIG_MANAGER.config["gwrite"]
 
     # If no profile was provided, try to use a default
@@ -72,6 +102,12 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     unit_scale = vp.convert_length(unit)
     document.scale(scale_x / unit_scale, scale_y / unit_scale)
     document.translate(offset_x, offset_y)
+
+    invert_x = config.get("invert_x", False)
+    invert_y = config.get("invert_y", False)
+    # transform the document according to inversion parameters
+    if invert_x or invert_y:
+        document = invert_axis(document, invert_x, invert_y)
 
     # process file
     filename = output.name
@@ -187,7 +223,9 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         output.write(document_end.format(filename=filename))
     output.flush()
     output.close()
-
+    info = config.get("info", None)
+    if info:
+        print(info)
     return orig_document
 
 

@@ -5,6 +5,8 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "in"
+invert_y = "True"
+info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.gcodemm]
 document_start = "G21\nG17\nG90\n"
@@ -12,6 +14,8 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "mm"
+invert_y = "True"
+info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.gcode_relative]
 document_start = "G20\nG17\nG91\n"
@@ -19,6 +23,8 @@ segment_first = "G00 X{dx:.4f} Y{dy:.4f}\n"
 segment = "G01 X{dx:.4f} Y{dy:.4f}\n"
 document_end = "M2\n"
 unit = "in"
+invert_y = "True"
+info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.csv]
 document_start = "#Operation, X-value, Y-value\n"
