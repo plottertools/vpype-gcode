@@ -6,25 +6,18 @@ import click
 import vpype as vp
 
 # Load the default config
-from vpype import LayerType
 
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
-def invert_axis(
-    document: vp.Document,
-    invert_x: bool,
-    invert_y: bool
-):
-    """ Inverts none, one or borth axis of the document.
+def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
+    """Inverts none, one or both axis of the document.
     This applies a relative scale operation with factors of 1 or -1
-    on the two axis to all layers. The invertion happens relative to
+    on the two axis to all layers. The inversion happens relative to
     the center of the bounds.
     """
 
-    layer_ids = vp.multiple_to_layer_ids(LayerType.ALL, document)
-    bounds = document.bounds(layer_ids)
-
+    bounds = document.bounds()
     if not bounds:
         return document
 
@@ -33,13 +26,12 @@ def invert_axis(
         0.5 * (bounds[1] + bounds[3]),
     )
 
-    for vid in layer_ids:
-        lc = document[vid]
-        lc.translate(-origin[0], -origin[1])
-        lc.scale(-1 if invert_x else 1, -1 if invert_y else 1)
-        lc.translate(origin[0], origin[1])
+    document.translate(-origin[0], -origin[1])
+    document.scale(-1 if invert_x else 1, -1 if invert_y else 1)
+    document.translate(origin[0], origin[1])
 
     return document
+
 
 @click.command()
 @click.argument("output", type=click.File("w"))
