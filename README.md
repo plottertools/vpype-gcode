@@ -288,3 +288,4 @@ Which is valid JSON.
 # Thanks
 * abey76 - Helped with advice that largely pushes us towards the integration goals as well as his very solid suggestion to use .format() which greatly expands the expected formats.
 * theomega - Basically rewrote the thing into the dapper codebase you see today. Rather than the 4 hours I figured I'd kill on this.
+* ithinkido - For his many insightful comments and determination to make this project as good as it can be.
