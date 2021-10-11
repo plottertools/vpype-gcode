@@ -225,7 +225,9 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         output.write(document_end.format(filename=filename))
     output.flush()
     output.close()
-
+    info = config.get("info", None)
+    if info:
+        print(info)
     return orig_document
 
 
