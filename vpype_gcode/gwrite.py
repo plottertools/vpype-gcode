@@ -46,7 +46,7 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
 @vp.global_processor
 def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     """
-    Write gcode files for the vpype pipeline.
+    Write gcode or other ascii files for the vpype pipeline.
 
     The output format can be customized by the user heavily to an extent that you can also output most known
     non-gcode ascii text files.
