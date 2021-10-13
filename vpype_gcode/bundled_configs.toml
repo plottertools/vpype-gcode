@@ -56,6 +56,33 @@ segment = "{idx:d} {idy:d} "
 line_end = '"/>'
 layer_end = "</g>"
 
+[gwrite.HPGL-R]
+document_start = "IN;"
+layer_start = "SP{layer_id:d};PA;PU0,0;PR;" 
+segment_first = "PU{dx:.0f},{dy:.0f};PD"
+segment = "{dx:.0f},{dy:.0f},"
+segment_last ="{dx:.0f},{dy:.0f};"
+document_end = ";SP0;IN\n"
+scale_x = 40
+scale_y = 40
+unit = "mm"
+invert_y = "True"
+info = "Output HPGL relative co-ordinates NB. This will not take care of page margins etc within the machine.
+\n Ensure that the svg layout is landscape. \n Pen numbers will be taken from layer numbers"
+
+[gwrite.BBC-GL-R]
+document_start = ""
+layer_start = "F{layer_id:d}\nC0,0;HK\n"
+segment_first = "C{dx:.0f},{dy:.0f};HJ\n"
+segment = "C{dx:.0f},{dy:.0f};IJ\n"
+document_end = "F0\n"
+scale_x = 10
+scale_y = 10
+unit = "mm"
+invert_y = "True"
+info = "Will output relative coordinates\nMake sure your input layout matches the paper loaded \n
+i.e. landscape svg when landscape paper in the machine \n Pen numbers will be taken from layer numbers"
+
 [gwrite.BBC-GL]
 document_start = ""
 layer_start = "F{layer_id:d}\n"
@@ -66,7 +93,8 @@ scale_x = 10
 scale_y = 10
 unit = "mm"
 invert_y = "True"
-info = "Make sure your input layout matches the paper loaded \ni.e. landscape svg when landscape paper in the machine \n Pen numbers will be taken from layer numbers"
+info = "Make sure your input layout matches the paper loaded \n
+i.e. landscape svg when landscape paper in the machine \n Pen numbers will be taken from layer numbers"
 
 [gwrite.ninja]
 document_start = "G21\nG17\nG90\nG28\n"
