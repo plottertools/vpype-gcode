@@ -123,6 +123,10 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         if layer_start is not None:
             output.write(
                 layer_start.format(
+                    x=last_x,
+                    y=last_y,
+                    ix=xx,
+                    iy=yy,
                     index=layer_index,
                     index1=layer_index + 1,
                     layer_index=layer_index,
@@ -136,6 +140,10 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
             if line_start is not None:
                 output.write(
                     line_start.format(
+                        x=last_x,
+                        y=last_y,
+                        ix=xx,
+                        iy=yy,
                         index=lines_index,
                         index1=lines_index + 1,
                         lines_index=lines_index,
@@ -194,6 +202,10 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
             if line_end is not None:
                 output.write(
                     line_end.format(
+                        x=last_x,
+                        y=last_y,
+                        ix=xx,
+                        iy=yy,
                         index=lines_index,
                         index1=lines_index + 1,
                         lines_index=lines_index,
@@ -209,6 +221,10 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
         if layer_end is not None:
             output.write(
                 layer_end.format(
+                    x=last_x,
+                    y=last_y,
+                    ix=xx,
+                    iy=yy,
                     index=layer_index,
                     index1=layer_index + 1,
                     layer_index=layer_index,
