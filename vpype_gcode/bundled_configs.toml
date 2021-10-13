@@ -66,7 +66,7 @@ scale_x = 10
 scale_y = 10
 unit = "mm"
 invert_y = "True"
-info = "Make sure your input layout matches the paper loaded \ni.e. landsacpe svg when landscape paper in the machine \n Pen numbers will be taken from layer numbers"
+info = "Make sure your input layout matches the paper loaded \ni.e. landscape svg when landscape paper in the machine \n Pen numbers will be taken from layer numbers"
 
 [gwrite.ninja]
 document_start = "G21\nG17\nG90\nG28\n"
