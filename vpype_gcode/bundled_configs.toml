@@ -58,13 +58,15 @@ layer_end = "</g>"
 
 [gwrite.BBC-GL]
 document_start = ""
-layer_start = "F{index1:d}\n"
+layer_start = "F{layer_id:d}\n"
 segment_first = "C{x:.0f},{y:.0f};HK\n"
 segment = "C{x:.0f},{y:.0f};IK\n"
 document_end = "F0\n"
 scale_x = 10
 scale_y = 10
 unit = "mm"
+invert_y = "True"
+info = "Make sure your input layout matches the paper loaded \ni.e. landsacpe svg when landscape paper in the machine \n Pen numbers will be taken from layer numbers"
 
 [gwrite.ninja]
 document_start = "G21\nG17\nG90\nG28\n"
