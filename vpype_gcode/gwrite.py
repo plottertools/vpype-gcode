@@ -217,7 +217,22 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     )
                 )
             if line_join is not None and lines_index != lastlines_index:
-                output.write(line_join)
+                output.write(
+                    line_join.format(
+                        x=last_x,
+                        y=last_y,
+                        ix=xx,
+                        iy=yy,
+                        index=lines_index,
+                        index1=lines_index + 1,
+                        lines_index=lines_index,
+                        lines_index1=lines_index + 1,
+                        layer_index=layer_index,
+                        layer_index1=layer_index + 1,
+                        layer_id=layer_id,
+                        filename=filename,
+                    )
+                )
         if layer_end is not None:
             output.write(
                 layer_end.format(
@@ -234,7 +249,20 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                 )
             )
         if layer_join is not None and layer_index != lastlayer_index:
-            output.write(layer_join)
+            output.write(
+                layer_join.format(
+                    x=last_x,
+                    y=last_y,
+                    ix=xx,
+                    iy=yy,
+                    index=layer_index,
+                    index1=layer_index + 1,
+                    layer_index=layer_index,
+                    layer_index1=layer_index + 1,
+                    layer_id=layer_id,
+                    filename=filename,
+                )
+            )
     if document_end is not None:
         output.write(document_end.format(filename=filename))
     output.flush()
