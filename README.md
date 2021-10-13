@@ -67,6 +67,7 @@ G4 P0.5\n"""
 document_end = """M5
 G00 X0.0000 Y0.0000
 M2"""
+invert_y = "True"
 ```
 
 You can use the following options inside a profile. You only need to provide the options where you need to change the default. If you want a newline character in an option, you can either use escape sequences (`\n`) or you use TOML multi line strings wrapped in `""""`.
@@ -98,13 +99,33 @@ All of the options below default to an empty text which means no output is gener
 
 ### Segment formatting
 `gwrite` uses `.format()` encoding which means that data elements must be encapsulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
-For example every element except `layer_join` and `segment_join` accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
-- `layer_start`: Accepts `index` the current layer index starting from 0, `index1` the current layer number starting from 1, and `layer_id` as vpype layer ID.
-- `layer_end`: Accepts `index` the current layer index starting from 0, `index1` the current layer number starting from 1,  and `layer_id` as vpype layer ID.
-- `line_start`: Accepts `index` the current line number starting from 0, `index1` the current line number starting from 1, and `layer_index`, `layer_index1`, and `layer_id` values for the current layer this line is within.
-- `line_end`: Accepts `index` the current line number starting from 0, `index1` the current line number starting from 1, and `layer_index`, `layer_index1`, and `layer_id` values for the current layer this line is within.
+For example every element accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
+- `layer_start`, `layer_end` and `layer_join`: Accepts `x`, `y`, `ix`, `iy`, `index`, `index1`, `layer_index`, `layer_index1`, `layer_id`, and `filename`.
+  - `x` the last_x position before this layer, this is 0 for the first layer
+  - `y` the last_y position before this layer, this is 0 for the first layer
+  - `ix` the last integer x location before this layer, this is 0 for the first layer.
+  - `iy` the last integer y location before this layer, this is 0 for the first layer.
+  - `index` same as `layer_index`
+  - `index1` same as `layer_index1`
+  - `layer_index` the current layer index starting from 0
+  - `layer_index1` the current layer number starting from 1
+  - `layer_id` as vpype layer ID.
+  - `filename` file name of the file being saved
+- `line_start`, `line_end` and `line_join`: Accepts `x`, `y`, `ix`, `iy`, `index`, `index1`, `lines_index`, `lines_index1`, `layer_index`, `layer_index1`, `layer_id`, and `filename`.
+  - `x` the last_x position before this line, this is 0 for the first line of the first layer
+  - `y` the last_y position before this line, this is 0 for the first line of the first layer
+  - `ix` the last integer x location before this layer, this is 0 for the first layer.
+  - `iy` the last integer y location before this layer, this is 0 for the first layer.
+  - `index` same as `line_index`
+  - `index1` same as `line_index1`
+  - `line_index` the current line index within this layer starting from 0
+  - `line_index1` the current line index within this layer number starting from 1 
+  - `layer_index` the current layer index starting from 0
+  - `layer_index1` the current layer number starting from 1
+  - `layer_id` values for the current vpype layer ID that contains this line
+  - `filename` file name of the file being saved
   
-The segments accept a lot of values that may be useful statistics for various formats:
+The segments (`segment_first`, `segment`, `segment_last`) accept a lot of values that may be useful statistics for various formats:
 * `index`: index of the particular coordinate pair. eg `{index:d}`
 * `x` absolute position x in floating point number. eg `{x:.4f}`
 * `y` absolute position y in floating point number. eg `{y:g}`
@@ -118,11 +139,24 @@ The segments accept a lot of values that may be useful statistics for various fo
 * `iy` absolute position y in integer number. eg `{iy:d}`
 * `idx` relative position x in integer number. eg `{idx:d}`
 * `idy` relative position y in integer number. eg `{idy:d}`
+* `index` same as `segment_index`
+* `index1` same as `segment_index1`
+* `segment_index` the current segment within this line starting from 0
+* `segment_index1` the current segment within this line starting from 1
+* `line_index` the current line index within this layer starting from 0
+* `line_index1` the current line index within this layer number starting from 1 
+* `layer_index` the current layer index starting from 0
+* `layer_index1` the current layer number starting from 1
+* `layer_id` values for the current vpype layer ID that contains this line
+* `filename` file name of the file being saved
 
-Note: `idx` and `idy` are properly guarded against compounding fractional rounding errors. Moving 0.1 units 1000 times results in a location 100 units away and not zero.
+#### Notes
+* `idx` and `idy` are properly guarded against compounding fractional rounding errors. Moving 0.1 units 1000 times results in a location 100 units away and not zero.
+* `line_join` occurs after `line_end` but only appears *between* lines, it does not occur after the last line.
+* `layer_join` occurs after `layer_end` but only appears *between* layers, it does not occur after the last layer.
 
 ### Information Control
-- `info`: prints text after file is written to inform the user of said information
+- `info`: prints text to the console after file is written to inform the user of said information
 
 ## Output structure
 The gwrite command gives you access to write to a variety of formats that fit the given outline. We're writing generic ascii. Since gcode can have more flavors than a Baskin Robbins™, it's best to simply draw broad strokes as to what ascii output should look like. Here we define the various elements without any regard to the gcode it will largely be producing.
@@ -137,6 +171,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
       <segment>
       <segment_last>
     <line_end>
+    <line_join>
     <line_start>
       <segment_first>
       <segment>
@@ -145,6 +180,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
       <segment>
       <segment_last>
     <line_end>
+    <line_join>
     <line_start>
       <segment_first>
       <segment>
@@ -154,6 +190,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
       <segment_last>
     <line_end>
  <layer_end>
+ <layer_join>
  <layer_start>
     <line_start>
       <segment_first>
@@ -163,6 +200,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
       <segment>
       <segment_last>
     <line_end>
+    <line_join>
     <line_start>
       <segment_first>
       <segment>
@@ -171,6 +209,7 @@ The gwrite command gives you access to write to a variety of formats that fit th
       <segment>
       <segment_last>
     <line_end>
+    <line_join>
     <line_start>
       <segment_first>
       <segment>
@@ -187,6 +226,20 @@ To prevent having to provide the profile on every invocation of the gcode plugin
 ```toml
 [gwrite]
 default_profile = "gcode"
+```
+
+## Coordinate System
+`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `invert_y` and `invert_x` equals `"True"` in your profile. This will mirror the work horizontally or vertically within the same euclidean space. For example the native Coordinate system of gcode is origin point in the bottom left. This requires that for gcode profiles be marked as `invert_y`.
+
+```toml
+[gwrite.gcode]
+document_start = "G20\nG17\nG90\n"
+segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
+segment = "G01 X{x:.4f} Y{y:.4f}\n"
+document_end = "M2\n"
+unit = "in"
+invert_y = "True"
+info= "This gcode profile is correctly inverted across the y-axis"
 ```
 
 # Examples
