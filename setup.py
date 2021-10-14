@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setup(
     name="vpype-gcode",
-    version="0.10.2",
+    version="0.10.3",
     description="vpype gcode plugin",
     long_description=readme,
     long_description_content_type="text/markdown",
