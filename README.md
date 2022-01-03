@@ -67,7 +67,7 @@ G4 P0.5\n"""
 document_end = """M5
 G00 X0.0000 Y0.0000
 M2"""
-invert_y = "True"
+invert_y = true
 ```
 
 You can use the following options inside a profile. You only need to provide the options where you need to change the default. If you want a newline character in an option, you can either use escape sequences (`\n`) or you use TOML multi line strings wrapped in `""""`.
@@ -229,7 +229,7 @@ default_profile = "gcode"
 ```
 
 ## Coordinate System
-`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `invert_y` and `invert_x` equals `"True"` in your profile. This will mirror the work horizontally or vertically within the same euclidean space. For example the native Coordinate system of gcode is origin point in the bottom left. This requires that for gcode profiles be marked as `invert_y`.
+`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `invert_y` and `invert_x` equals `true` in your profile. This will mirror the work horizontally or vertically within the same euclidean space. For example the native Coordinate system of gcode is origin point in the bottom left. This requires that for gcode profiles be marked as `invert_y`.
 
 ```toml
 [gwrite.gcode]
@@ -238,7 +238,7 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "in"
-invert_y = "True"
+invert_y = true
 info= "This gcode profile is correctly inverted across the y-axis"
 ```
 
