@@ -4,9 +4,9 @@ from pathlib import Path
 
 import click
 import vpype as vp
+import vpype_cli
 
 # Load the default config
-
 vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
@@ -34,16 +34,16 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
 
 
 @click.command()
-@click.argument("output", type=click.File("w"))
+@click.argument("output", type=vpype_cli.FileType("w"))
 @click.option(
     "-p",
     "--profile",
     nargs=1,
     default=None,
-    type=str,
+    type=vpype_cli.TextType(),
     help="gcode writer profile from the vpype configuration file subsection 'gwrite'",
 )
-@vp.global_processor
+@vpype_cli.global_processor
 def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     """
     Write gcode or other ascii files for the vpype pipeline.

@@ -13,7 +13,7 @@ setup(
     author_email="tatarize@gmail.com",
     url="https://github.com/plottertools/vpype-gcode/",
     packages=["vpype_gcode"],
-    classifiers=(
+    classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -23,11 +23,11 @@ setup(
         "Topic :: Multimedia :: Graphics",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-    ),
+    ],
     include_package_data=True,
     install_requires=[
         "click",
-        "vpype",
+        "vpype>=1.9,<2.0",
         "numpy",
     ],
     entry_points="""
