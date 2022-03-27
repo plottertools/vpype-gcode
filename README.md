@@ -9,7 +9,18 @@ Gcode vpype plugin. Write gcode files for the vpype pipeline. The output format 
 
 
 # Installing
-`$ pip install vpype-gcode`
+
+pipx-based *vpype* install:
+
+```
+$ pipx inject vpype vpype-gcode
+```
+
+Global or venv-based *vpype* install:
+
+```
+$ pip install vpype-gcode
+```
 
 # Usage
 
