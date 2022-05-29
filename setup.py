@@ -14,10 +14,9 @@ setup(
     url="https://github.com/plottertools/vpype-gcode/",
     packages=["vpype_gcode"],
     classifiers=[
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Environment :: Console",
         "Topic :: Artistic Software",
         "Topic :: Multimedia :: Graphics",
@@ -27,7 +26,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "click",
-        "vpype>=1.9,<2.0",
+        "vpype>=1.10,<2.0",
         "numpy",
     ],
     entry_points="""

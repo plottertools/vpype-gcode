@@ -111,7 +111,11 @@ All of the options below default to an empty text which means no output is gener
 ### Segment formatting
 `gwrite` uses `.format()` encoding which means that data elements must be encapsulated in `{}` brackets. This provides a particular syntax token which differs from between elements.
 For example every element accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
-- `layer_start`, `layer_end` and `layer_join`: Accepts `x`, `y`, `ix`, `iy`, `index`, `index1`, `layer_index`, `layer_index1`, `layer_id`, and `filename`.
+
+- `document_start` and `document_end` accept the following:
+  - `filename` file name of the file being saved 
+
+- `layer_start`, `layer_end` and `layer_join` accept the following:
   - `x` the last_x position before this layer, this is 0 for the first layer
   - `y` the last_y position before this layer, this is 0 for the first layer
   - `ix` the last integer x location before this layer, this is 0 for the first layer.
@@ -122,7 +126,8 @@ For example every element accepts the value of `index`. You would encode that in
   - `layer_index1` the current layer number starting from 1
   - `layer_id` as vpype layer ID.
   - `filename` file name of the file being saved
-- `line_start`, `line_end` and `line_join`: Accepts `x`, `y`, `ix`, `iy`, `index`, `index1`, `lines_index`, `lines_index1`, `layer_index`, `layer_index1`, `layer_id`, and `filename`.
+
+- `line_start`, `line_end` and `line_join`accept the following:
   - `x` the last_x position before this line, this is 0 for the first line of the first layer
   - `y` the last_y position before this line, this is 0 for the first line of the first layer
   - `ix` the last integer x location before this layer, this is 0 for the first layer.
@@ -136,35 +141,79 @@ For example every element accepts the value of `index`. You would encode that in
   - `layer_id` values for the current vpype layer ID that contains this line
   - `filename` file name of the file being saved
   
-The segments (`segment_first`, `segment`, `segment_last`) accept a lot of values that may be useful statistics for various formats:
-* `index`: index of the particular coordinate pair. eg `{index:d}`
-* `x` absolute position x in floating point number. eg `{x:.4f}`
-* `y` absolute position y in floating point number. eg `{y:g}`
-* `dx` relative position x in floating point number. eg `{dx:f}`
-* `dy` relative position y in floating point number. eg `{dy:.2f}`
-* `_x` negated absolute position x in floating point number. eg `{_x:.4f}`
-* `_y` negated absolute position y in floating point number. eg `{_y:g}`
-* `_dx` negated relative position x in floating point number. eg `{_dx:f}`
-* `_dy` negated relative position y in floating point number. eg `{_dy:.2f}`
-* `ix` absolute position x in integer number. eg `{ix:d}`
-* `iy` absolute position y in integer number. eg `{iy:d}`
-* `idx` relative position x in integer number. eg `{idx:d}`
-* `idy` relative position y in integer number. eg `{idy:d}`
-* `index` same as `segment_index`
-* `index1` same as `segment_index1`
-* `segment_index` the current segment within this line starting from 0
-* `segment_index1` the current segment within this line starting from 1
-* `line_index` the current line index within this layer starting from 0
-* `line_index1` the current line index within this layer number starting from 1 
-* `layer_index` the current layer index starting from 0
-* `layer_index1` the current layer number starting from 1
-* `layer_id` values for the current vpype layer ID that contains this line
-* `filename` file name of the file being saved
+- `segment_first`, `segment`, `segment_last` accept the following:
+  * `index`: index of the particular coordinate pair. eg `{index:d}`
+  * `x` absolute position x in floating point number. eg `{x:.4f}`
+  * `y` absolute position y in floating point number. eg `{y:g}`
+  * `dx` relative position x in floating point number. eg `{dx:f}`
+  * `dy` relative position y in floating point number. eg `{dy:.2f}`
+  * `_x` negated absolute position x in floating point number. eg `{_x:.4f}`
+  * `_y` negated absolute position y in floating point number. eg `{_y:g}`
+  * `_dx` negated relative position x in floating point number. eg `{_dx:f}`
+  * `_dy` negated relative position y in floating point number. eg `{_dy:.2f}`
+  * `ix` absolute position x in integer number. eg `{ix:d}`
+  * `iy` absolute position y in integer number. eg `{iy:d}`
+  * `idx` relative position x in integer number. eg `{idx:d}`
+  * `idy` relative position y in integer number. eg `{idy:d}`
+  * `index` same as `segment_index`
+  * `index1` same as `segment_index1`
+  * `segment_index` the current segment within this line starting from 0
+  * `segment_index1` the current segment within this line starting from 1
+  * `line_index` the current line index within this layer starting from 0
+  * `line_index1` the current line index within this layer number starting from 1 
+  * `layer_index` the current layer index starting from 0
+  * `layer_index1` the current layer number starting from 1
+  * `layer_id` values for the current vpype layer ID that contains this line
+  * `filename` file name of the file being saved
 
 #### Notes
 * `idx` and `idy` are properly guarded against compounding fractional rounding errors. Moving 0.1 units 1000 times results in a location 100 units away and not zero.
 * `line_join` occurs after `line_end` but only appears *between* lines, it does not occur after the last line.
 * `layer_join` occurs after `layer_end` but only appears *between* layers, it does not occur after the last layer.
+
+### Using properties
+
+In addition to the variables described in the previous section, any existing [property](https://vpype.readthedocs.io/en/latest/fundamentals.html#properties) may be used for substitution. For example, the layer color is stored as a property named `vp_color` and can be added to the profile with the pattern `{vp_color}`. Since this is a layer property, it would be available for all options but `document_start` and `document_end`, for which no current layer is defined. Global properties are available to all options.
+
+There is no guarantee that a given property is defined upon export time, even system properties such as `vp_color`. If a property used in the selected profile doesn't exist, an error will be generated. To avoid this, a default value for the property must be provided, which can be achieved in two ways: in the config file or using the `--default` option.
+
+This is an example of profile configuration which includes a default value for the `vp_color` and `vp_pen_width` properties:
+
+```toml
+[gwrite.summary]
+layer_start = "layer {layer_index1:d} (color = {vp_color}, pen_width = {vp_pen_width:0.2f})\n"
+layer_join = "\n"
+line_start = "line {index1} segment count: "
+segment_last = "{index:d}\n"
+default_values = {vp_color = "undefined", vp_pen_width = 0.1}
+```
+
+Here is an example of use:
+
+```
+$ vpype  rect 0 0 10cm 10cm  color red  random --layer 2  penwidth --layer 2 0.5mm  gwrite -p summary -
+layer 1 (color = #ff0000, pen_width = 0.10)
+line 1 segment count: 4
+
+layer 2 (color = undefined, pen_width = 1.89)
+line 1 segment count: 1
+line 2 segment count: 1
+line 3 segment count: 1
+line 4 segment count: 1
+line 5 segment count: 1
+line 6 segment count: 1
+line 7 segment count: 1
+line 8 segment count: 1
+line 9 segment count: 1
+line 10 segment count: 1
+```
+ 
+Alternatively, default values for string-based variable may be provided using the command line using the `--default` option:
+
+```
+$ vpype [...] gwrite -p summary --default vp_color undefined output.txt
+```
+
 
 ### Information Control
 - `info`: prints text to the console after file is written to inform the user of said information

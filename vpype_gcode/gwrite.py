@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+import collections
 import copy
+import sys
 import typing
 from pathlib import Path
 
@@ -38,18 +42,26 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
 @click.option(
     "-p",
     "--profile",
-    nargs=1,
-    default=None,
     type=vpype_cli.TextType(),
     help="gcode writer profile from the vpype configuration file subsection 'gwrite'",
 )
+@click.option(
+    "-d",
+    "--default",
+    nargs=2,
+    multiple=True,
+    type=vpype_cli.TextType(),
+    help="set a default value for a variable in case it is not found as property",
+)
 @vpype_cli.global_processor
-def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
+def gwrite(
+    document: vp.Document, output: typing.TextIO, profile: str, default: tuple[tuple[str, str]]
+):
     """
     Write gcode or other ascii files for the vpype pipeline.
 
-    The output format can be customized by the user heavily to an extent that you can also output most known
-    non-gcode ascii text files.
+    The output format can be customized by the user heavily to an extent that you can also
+    output most known non-gcode ascii text files.
     """
     gwrite_config = vp.CONFIG_MANAGER.config["gwrite"]
 
@@ -109,51 +121,71 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
     if invert_x or invert_y:
         document = invert_axis(document, invert_x, invert_y)
 
+    # prepare
+    current_layer: vp.LineCollection | None = None
+
+    def write_template(template: str | None, **context_vars: typing.Any):
+        """Expend a user-provided template using `format()`-style substitution."""
+        if template is None:
+            return
+        dicts = [context_vars, document.metadata]
+        if current_layer is not None:
+            dicts.append(current_layer.metadata)
+        dicts.append(dict(default))
+        if "default_values" in config:
+            dicts.append(config["default_values"])
+
+        try:
+            output.write(template.format_map(collections.ChainMap(*dicts)))
+        except KeyError as exc:
+            raise click.BadParameter(
+                f"key {exc.args[0]!r} not found in context variables or properties"
+            )
+
     # process file
     filename = output.name
-    if document_start is not None:
-        output.write(document_start.format(filename=filename))
+    write_template(document_start, filename=filename)
+
     last_x = 0
     last_y = 0
     xx = 0
     yy = 0
     lastlayer_index = len(document.layers.values()) - 1
-    for layer_index, layer_id in enumerate(document.layers):
-        layer = document.layers[layer_id]
-        if layer_start is not None:
-            output.write(
-                layer_start.format(
-                    x=last_x,
-                    y=last_y,
-                    ix=xx,
-                    iy=yy,
-                    index=layer_index,
-                    index1=layer_index + 1,
-                    layer_index=layer_index,
-                    layer_index1=layer_index + 1,
-                    layer_id=layer_id,
-                    filename=filename,
-                )
-            )
+
+    for layer_index, (layer_id, layer) in enumerate(document.layers.items()):
+        current_layer = layer  # used by write_template()
+
+        write_template(
+            layer_start,
+            x=last_x,
+            y=last_y,
+            ix=xx,
+            iy=yy,
+            index=layer_index,
+            index1=layer_index + 1,
+            layer_index=layer_index,
+            layer_index1=layer_index + 1,
+            layer_id=layer_id,
+            filename=filename,
+        )
         lastlines_index = len(layer) - 1
         for lines_index, line in enumerate(layer):
-            if line_start is not None:
-                output.write(
-                    line_start.format(
-                        x=last_x,
-                        y=last_y,
-                        ix=xx,
-                        iy=yy,
-                        index=lines_index,
-                        index1=lines_index + 1,
-                        lines_index=lines_index,
-                        lines_index1=lines_index + 1,
-                        layer_index=layer_index,
-                        layer_index1=layer_index + 1,
-                        layer_id=layer_id,
-                        filename=filename,
-                    )
-                )
+            write_template(
+                line_start,
+                x=last_x,
+                y=last_y,
+                ix=xx,
+                iy=yy,
+                index=lines_index,
+                index1=lines_index + 1,
+                lines_index=lines_index,
+                lines_index1=lines_index + 1,
+                layer_index=layer_index,
+                layer_index1=layer_index + 1,
+                layer_id=layer_id,
+                filename=filename,
+            )
+
             segment_last_index = len(line) - 1
             for segment_index, seg in enumerate(line):
                 x = seg.real
@@ -170,106 +202,104 @@ def gwrite(document: vp.Document, output: typing.TextIO, profile: str):
                     seg_write = segment_last
                 else:
                     seg_write = segment
-                if seg_write is not None:
-                    output.write(
-                        seg_write.format(
-                            x=x,
-                            y=y,
-                            dx=dx,
-                            dy=dy,
-                            _x=-x,
-                            _y=-y,
-                            _dx=-dx,
-                            _dy=-dy,
-                            ix=xx,
-                            iy=yy,
-                            idx=idx,
-                            idy=idy,
-                            index=segment_index,
-                            index1=segment_index + 1,
-                            segment_index=segment_index,
-                            segment_index1=segment_index + 1,
-                            lines_index=lines_index,
-                            lines_index1=lines_index + 1,
-                            layer_index=layer_index,
-                            layer_index1=layer_index + 1,
-                            layer_id=layer_id,
-                            filename=filename,
-                        )
-                    )
+
+                write_template(
+                    seg_write,
+                    x=x,
+                    y=y,
+                    dx=dx,
+                    dy=dy,
+                    _x=-x,
+                    _y=-y,
+                    _dx=-dx,
+                    _dy=-dy,
+                    ix=xx,
+                    iy=yy,
+                    idx=idx,
+                    idy=idy,
+                    index=segment_index,
+                    index1=segment_index + 1,
+                    segment_index=segment_index,
+                    segment_index1=segment_index + 1,
+                    lines_index=lines_index,
+                    lines_index1=lines_index + 1,
+                    layer_index=layer_index,
+                    layer_index1=layer_index + 1,
+                    layer_id=layer_id,
+                    filename=filename,
+                )
+
                 last_x = x
                 last_y = y
-            if line_end is not None:
-                output.write(
-                    line_end.format(
-                        x=last_x,
-                        y=last_y,
-                        ix=xx,
-                        iy=yy,
-                        index=lines_index,
-                        index1=lines_index + 1,
-                        lines_index=lines_index,
-                        lines_index1=lines_index + 1,
-                        layer_index=layer_index,
-                        layer_index1=layer_index + 1,
-                        layer_id=layer_id,
-                        filename=filename,
-                    )
-                )
-            if line_join is not None and lines_index != lastlines_index:
-                output.write(
-                    line_join.format(
-                        x=last_x,
-                        y=last_y,
-                        ix=xx,
-                        iy=yy,
-                        index=lines_index,
-                        index1=lines_index + 1,
-                        lines_index=lines_index,
-                        lines_index1=lines_index + 1,
-                        layer_index=layer_index,
-                        layer_index1=layer_index + 1,
-                        layer_id=layer_id,
-                        filename=filename,
-                    )
-                )
-        if layer_end is not None:
-            output.write(
-                layer_end.format(
+
+            write_template(
+                line_end,
+                x=last_x,
+                y=last_y,
+                ix=xx,
+                iy=yy,
+                index=lines_index,
+                index1=lines_index + 1,
+                lines_index=lines_index,
+                lines_index1=lines_index + 1,
+                layer_index=layer_index,
+                layer_index1=layer_index + 1,
+                layer_id=layer_id,
+                filename=filename,
+            )
+
+            if lines_index != lastlines_index:
+                write_template(
+                    line_join,
                     x=last_x,
                     y=last_y,
                     ix=xx,
                     iy=yy,
-                    index=layer_index,
-                    index1=layer_index + 1,
+                    index=lines_index,
+                    index1=lines_index + 1,
+                    lines_index=lines_index,
+                    lines_index1=lines_index + 1,
                     layer_index=layer_index,
                     layer_index1=layer_index + 1,
                     layer_id=layer_id,
                     filename=filename,
                 )
+        write_template(
+            layer_end,
+            x=last_x,
+            y=last_y,
+            ix=xx,
+            iy=yy,
+            index=layer_index,
+            index1=layer_index + 1,
+            layer_index=layer_index,
+            layer_index1=layer_index + 1,
+            layer_id=layer_id,
+            filename=filename,
+        )
+        if layer_index != lastlayer_index:
+            write_template(
+                layer_join,
+                x=last_x,
+                y=last_y,
+                ix=xx,
+                iy=yy,
+                index=layer_index,
+                index1=layer_index + 1,
+                layer_index=layer_index,
+                layer_index1=layer_index + 1,
+                layer_id=layer_id,
+                filename=filename,
             )
-        if layer_join is not None and layer_index != lastlayer_index:
-            output.write(
-                layer_join.format(
-                    x=last_x,
-                    y=last_y,
-                    ix=xx,
-                    iy=yy,
-                    index=layer_index,
-                    index1=layer_index + 1,
-                    layer_index=layer_index,
-                    layer_index1=layer_index + 1,
-                    layer_id=layer_id,
-                    filename=filename,
-                )
-            )
-    if document_end is not None:
-        output.write(document_end.format(filename=filename))
-    output.flush()
-    output.close()
+        current_layer = None
+
+    write_template(document_end, filename=filename)
+
+    # handle info string
     info = config.get("info", None)
     if info:
-        print(info)
+        print(info, file=sys.stderr)
+
     return orig_document
 
 
