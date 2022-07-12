@@ -11,7 +11,7 @@ import vpype as vp
 import vpype_cli
 
 # Load the default config
-vp.CONFIG_MANAGER.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
+vp.config_manager.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
 def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
@@ -63,7 +63,7 @@ def gwrite(
     The output format can be customized by the user heavily to an extent that you can also
     output most known non-gcode ascii text files.
     """
-    gwrite_config = vp.CONFIG_MANAGER.config["gwrite"]
+    gwrite_config = vp.config_manager.config["gwrite"]
 
     # If no profile was provided, try to use a default
     if not profile:
