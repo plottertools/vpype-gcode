@@ -398,6 +398,16 @@ Using this profile, you can generate JSON for the rectangle:
 Which is valid JSON.
 
 
+# Release workflow
+
+New release should be created with the following workflow:
+
+1) Make/push as version bump commit
+2) Tag this commit with a version number (format: `0.X.Y`), push the commit to `origin`.
+3) Check that the GH Action workflow runs without error (the workflow builds wheels, pushes them to PyPI, and creates a draft GH Release).
+4) Edit the draft release and publish.
+
+
 # Credits
 
 * [tatarize](https://github.com/tatarize) - Wrote the bulk of the plug-in. 
