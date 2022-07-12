@@ -27,6 +27,7 @@ jobs:
     - name: Build
       id: build
       run: |
+        pip install wheel
         python setup.py build sdist bdist_wheel
 
     - name: Create Release
