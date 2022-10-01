@@ -132,10 +132,10 @@ For example every element accepts the value of `index`. You would encode that in
   - `y` the last_y position before this line, this is 0 for the first line of the first layer
   - `ix` the last integer x location before this layer, this is 0 for the first layer.
   - `iy` the last integer y location before this layer, this is 0 for the first layer.
-  - `index` same as `line_index`
-  - `index1` same as `line_index1`
-  - `line_index` the current line index within this layer starting from 0
-  - `line_index1` the current line index within this layer number starting from 1 
+  - `index` same as `lines_index`
+  - `index1` same as `lines_index1`
+  - `lines_index` the current line index within this layer starting from 0
+  - `lines_index1` the current line index within this layer number starting from 1 
   - `layer_index` the current layer index starting from 0
   - `layer_index1` the current layer number starting from 1
   - `layer_id` values for the current vpype layer ID that contains this line
@@ -159,8 +159,8 @@ For example every element accepts the value of `index`. You would encode that in
   * `index1` same as `segment_index1`
   * `segment_index` the current segment within this line starting from 0
   * `segment_index1` the current segment within this line starting from 1
-  * `line_index` the current line index within this layer starting from 0
-  * `line_index1` the current line index within this layer number starting from 1 
+  * `lines_index` the current line index within this layer starting from 0
+  * `lines_index1` the current line index within this layer number starting from 1 
   * `layer_index` the current layer index starting from 0
   * `layer_index1` the current layer number starting from 1
   * `layer_id` values for the current vpype layer ID that contains this line
