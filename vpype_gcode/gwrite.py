@@ -21,7 +21,16 @@ def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
     the center of the bounds.
     """
 
-    bounds = document.bounds()
+    # if the page size is set, then we'll flip around the middle of the page,
+    # otherwise around the geometry bounds
+    if document.page_size is not None:
+        # page size is in px, but everything else is in mm
+        (x, y) = document.page_size
+        px_per_mm = vp.utils.UNITS["mm"]
+        bounds = (0.0, 0.0, x/px_per_mm, y/px_per_mm)
+    else:
+        bounds = document.bounds()
+
     if not bounds:
         return document
 
