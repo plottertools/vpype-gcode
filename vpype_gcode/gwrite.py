@@ -14,21 +14,19 @@ import vpype_cli
 vp.config_manager.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
-def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
+def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool, whole_document: bool):
     """Inverts none, one or both axis of the document.
     This applies a relative scale operation with factors of 1 or -1
     on the two axis to all layers. The inversion happens relative to
-    the center of the page, if the page size has been set, otherwise to
+    the center of the page, if whole_document is true, otherwise to
     the center of the bounds.
     """
 
-    # if the page size is set, then we'll flip around the middle of the page,
-    # otherwise around the geometry bounds
-    if document.page_size is not None:
-        # page size is in px, but everything else is in mm
-        (x, y) = document.page_size
-        px_per_mm = vp.utils.UNITS["mm"]
-        bounds = (0.0, 0.0, x/px_per_mm, y/px_per_mm)
+    if whole_document and document.page_size is None:
+        raise RuntimeError("Cannot flip a document with an undefined page size")
+
+    if whole_document:
+        bounds = (0.0, 0.0, document.page_size[0], document.page_size[1])
     else:
         bounds = document.bounds()
 
@@ -118,18 +116,24 @@ def gwrite(
     scale_x = config.get("scale_x", 1.0)
     scale_y = config.get("scale_y", 1.0)
 
-    # transform the document according to the desired parameters
+    invert_x = config.get("invert_x", False)
+    invert_y = config.get("invert_y", False)
+    flip_x = config.get("horizontal_flip", False)
+    flip_y = config.get("vertical_flip", False)
+
     orig_document = document
     document = copy.deepcopy(document)  # do NOT affect the pipeline's document
+
+    # transform the document according to inversion parameters
+    if invert_x or invert_y:
+        document = invert_axis(document, invert_x, invert_y, whole_document=False)
+    if flip_x or flip_y:
+        document = invert_axis(document, flip_x, flip_y, whole_document=True)
+
+    # transform the document according to the desired parameters
     unit_scale = vp.convert_length(unit)
     document.scale(scale_x / unit_scale, scale_y / unit_scale)
     document.translate(offset_x, offset_y)
-
-    invert_x = config.get("invert_x", False)
-    invert_y = config.get("invert_y", False)
-    # transform the document according to inversion parameters
-    if invert_x or invert_y:
-        document = invert_axis(document, invert_x, invert_y)
 
     # prepare
     current_layer: vp.LineCollection | None = None

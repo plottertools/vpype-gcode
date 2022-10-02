@@ -5,7 +5,7 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "in"
-invert_y = true
+vertical_flip = true
 info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.gcodemm]
@@ -14,7 +14,7 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "mm"
-invert_y = true
+vertical_flip = true
 info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.gcode_relative]
@@ -23,7 +23,7 @@ segment_first = "G00 X{dx:.4f} Y{dy:.4f}\n"
 segment = "G01 X{dx:.4f} Y{dy:.4f}\n"
 document_end = "M2\n"
 unit = "in"
-invert_y = true
+vertical_flip = true
 info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.csv]
@@ -58,7 +58,7 @@ layer_end = "</g>"
 
 [gwrite.HPGL-R]
 document_start = "IN;"
-layer_start = "SP{layer_id:d};PA;PU0,0;PR;" 
+layer_start = "SP{layer_id:d};PA;PU0,0;PR;"
 segment_first = "PU{dx:.0f},{dy:.0f};PD"
 segment = "{dx:.0f},{dy:.0f},"
 segment_last ="{dx:.0f},{dy:.0f};"
@@ -66,7 +66,7 @@ document_end = ";SP0;IN\n"
 scale_x = 40
 scale_y = 40
 unit = "mm"
-invert_y = true
+vertical_flip = true
 info = """Output HPGL relative co-ordinates NB. This will not take care of page margins etc within the machine.
 
 Ensure that the svg layout is landscape.
@@ -82,7 +82,7 @@ document_end = "F0\n"
 scale_x = 10
 scale_y = 10
 unit = "mm"
-invert_y = true
+vertical_flip = true
 info = """Will output relative coordinates.
 
 Make sure your input layout matches the paper loaded.
@@ -99,7 +99,7 @@ document_end = "F0\n"
 scale_x = 10
 scale_y = 10
 unit = "mm"
-invert_y = true
+vertical_flip = true
 info = """Make sure your input layout matches the paper loaded.
 i.e. landscape svg when landscape paper in the machine
 

@@ -91,8 +91,10 @@ These parameters define the transformation between *vpype*'s and the target's co
 - `scale_y`: Apply a scaling factor on the Y axis. Use `-1` to invert the direction.
 - `offset_x`: Apply an offset to the X axis. This offset is expressed in the unit defined by `unit`.
 - `offset_y`: Apply an offset to the Y axis. This offset is expressed in the unit defined by `unit`.
-- `invert_x`: Mirror the document right-to-left if the page size has been set, otherwise mirror all points right-to-left without changing the position within the document.
-- `invert_y`: Mirror the document top-to-bottom if the page size has been set, otherwise mirror all points top-to-bottom without changing the position within the document space.
+- `horizontal_flip`: Flip the document right-to-left. Requires the document page size to be set.
+- `vertical_flip`: Flip the document to-to-bottom. Requires the document page size to be set. This will correctly transform the document from the standard SVG top-left origin to the standard gcode bottom-left origin.
+- `invert_x`: Flip all points right-to-left without changing the position within the document.
+- `invert_y`: Flip all points top-to-bottom without changing the position within the document.
 
 ### Output Format
 All of the options below default to an empty text which means no output is generated. However, if `segment_first` or `segment_last` is omitted the code from `segment` is used. If there is only one segment, `segment_first` takes priority over `segment_last`.
@@ -289,7 +291,7 @@ default_profile = "gcode"
 ```
 
 ## Coordinate System
-`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `invert_y` and `invert_x` equals `true` in your profile. This will mirror the document horizontally or vertically if the page size has been set. If it has not, then it will mirror the work without moving it in the document. For example the native Coordinate system of gcode is origin point in the bottom left. This system requires gcode profiles be marked with `invert_y = true`.
+`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `vertical_flip` and `horizontal_flip` equals `true` in your profile (or `invert_y` and `invert_x` in the uncommon situation where the document page size is not known). For example the native coordinate system of gcode is origin point in the bottom left with positive y values toward the top. This system requires gcode profiles be marked with `vertical_flip = true`.
 
 ```toml
 [gwrite.gcode]
@@ -298,7 +300,7 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "in"
-invert_y = true
+vertical_flip = true
 info= "This gcode profile is correctly inverted across the y-axis"
 ```
 
