@@ -3,7 +3,7 @@ Vpype plugin to generate gcode and other text output.
 See: https://github.com/abey79/vpype
 
 
-Gcode vpype plugin. Write gcode files for the vpype pipeline. The output format can be customized by the user heavily to an extent that you can also output non gcode ascii text files. 
+Gcode vpype plugin. Write gcode files for the vpype pipeline. The output format can be customized by the user heavily to an extent that you can also output non gcode ascii text files.
 
 * `gwrite` write geometries as gcode to a file
 
@@ -41,7 +41,7 @@ The goal of this project is to allow all hobbyists needing gcode writing to have
 Breaking changes are fine. Anything that will make this code more likely to end up in vpype properly and this particular library getting deprecated will be highly likely to be done.
 
 # Profiles
-This plugin supports different output profiles which configure the way the resulting output is formatted. Output profiles are flexible in a way that they can also be used to generate non gcode files, i.e. JSON or CSV files. 
+This plugin supports different output profiles which configure the way the resulting output is formatted. Output profiles are flexible in a way that they can also be used to generate non gcode files, i.e. JSON or CSV files.
 
 ## Predefined Profiles
 There are several predefined output profiles as part of the release:
@@ -91,8 +91,10 @@ These parameters define the transformation between *vpype*'s and the target's co
 - `scale_y`: Apply a scaling factor on the Y axis. Use `-1` to invert the direction.
 - `offset_x`: Apply an offset to the X axis. This offset is expressed in the unit defined by `unit`.
 - `offset_y`: Apply an offset to the Y axis. This offset is expressed in the unit defined by `unit`.
-- `invert_x`: Invert or mirror all points right-to-left without changing the position within the document space.
-- `invert_y`: Invert or mirror all points top-to-bottom without changing the position within the document space.
+- `horizontal_flip`: Flip the document right-to-left. Requires the document page size to be set.
+- `vertical_flip`: Flip the document to-to-bottom. Requires the document page size to be set. This will correctly transform the document from the standard SVG top-left origin to the standard gcode bottom-left origin.
+- `invert_x`: Flip all points right-to-left without changing the position within the document.
+- `invert_y`: Flip all points top-to-bottom without changing the position within the document.
 
 ### Output Format
 All of the options below default to an empty text which means no output is generated. However, if `segment_first` or `segment_last` is omitted the code from `segment` is used. If there is only one segment, `segment_first` takes priority over `segment_last`.
@@ -113,7 +115,7 @@ All of the options below default to an empty text which means no output is gener
 For example every element accepts the value of `index`. You would encode that in the text as `{index:d}` the d denotes an integer value. If you need to have a `{` value in your text you would encode that as `{{` likewise you would encode a `}` as `}}`.
 
 - `document_start` and `document_end` accept the following:
-  - `filename` file name of the file being saved 
+  - `filename` file name of the file being saved
 
 - `layer_start`, `layer_end` and `layer_join` accept the following:
   - `x` the last_x position before this layer, this is 0 for the first layer
@@ -135,12 +137,12 @@ For example every element accepts the value of `index`. You would encode that in
   - `index` same as `lines_index`
   - `index1` same as `lines_index1`
   - `lines_index` the current line index within this layer starting from 0
-  - `lines_index1` the current line index within this layer number starting from 1 
+  - `lines_index1` the current line index within this layer number starting from 1
   - `layer_index` the current layer index starting from 0
   - `layer_index1` the current layer number starting from 1
   - `layer_id` values for the current vpype layer ID that contains this line
   - `filename` file name of the file being saved
-  
+
 - `segment_first`, `segment`, `segment_last` accept the following:
   * `index`: index of the particular coordinate pair. eg `{index:d}`
   * `x` absolute position x in floating point number. eg `{x:.4f}`
@@ -160,7 +162,7 @@ For example every element accepts the value of `index`. You would encode that in
   * `segment_index` the current segment within this line starting from 0
   * `segment_index1` the current segment within this line starting from 1
   * `lines_index` the current line index within this layer starting from 0
-  * `lines_index1` the current line index within this layer number starting from 1 
+  * `lines_index1` the current line index within this layer number starting from 1
   * `layer_index` the current layer index starting from 0
   * `layer_index1` the current layer number starting from 1
   * `layer_id` values for the current vpype layer ID that contains this line
@@ -207,7 +209,7 @@ line 8 segment count: 1
 line 9 segment count: 1
 line 10 segment count: 1
 ```
- 
+
 Alternatively, default values for string-based variable may be provided using the command line using the `--default` option:
 
 ```
@@ -289,7 +291,7 @@ default_profile = "gcode"
 ```
 
 ## Coordinate System
-`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `invert_y` and `invert_x` equals `true` in your profile. This will mirror the work horizontally or vertically within the same euclidean space. For example the native Coordinate system of gcode is origin point in the bottom left. This requires that for gcode profiles be marked as `invert_y`.
+`Vpype-Gcode` uses the standard coordinate system of vpype which uses the SVG spec' system. The origin point is located in the upper-left hand corner. Positive y values are towards the bottom. If you wish to change the coordinate system you should use `vertical_flip` and `horizontal_flip` equals `true` in your profile (or `invert_y` and `invert_x` in the uncommon situation where the document page size is not known). For example the native coordinate system of gcode is origin point in the bottom left with positive y values toward the top. This system requires gcode profiles be marked with `vertical_flip = true`.
 
 ```toml
 [gwrite.gcode]
@@ -298,7 +300,7 @@ segment_first = "G00 X{x:.4f} Y{y:.4f}\n"
 segment = "G01 X{x:.4f} Y{y:.4f}\n"
 document_end = "M2\n"
 unit = "in"
-invert_y = true
+vertical_flip = true
 info= "This gcode profile is correctly inverted across the y-axis"
 ```
 
@@ -410,7 +412,7 @@ New release should be created with the following workflow:
 
 # Credits
 
-* [tatarize](https://github.com/tatarize) - Wrote the bulk of the plug-in. 
+* [tatarize](https://github.com/tatarize) - Wrote the bulk of the plug-in.
 * [abey79](https://github.com/abey79) - Helped with advice that largely pushes us towards the integration goals as well as his very solid suggestion to use .format() which greatly expands the expected formats.
 * [theomega](https://github.com/theomega) - Basically rewrote the thing into the dapper codebase you see today. Rather than the 4 hours I figured I'd kill on this.
 * [ithinkido](https://github.com/ithinkido) - For his many insightful comments and determination to make this project as good as it can be.

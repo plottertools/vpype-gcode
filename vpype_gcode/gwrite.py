@@ -14,14 +14,31 @@ import vpype_cli
 vp.config_manager.load_config_file(str(Path(__file__).parent / "bundled_configs.toml"))
 
 
-def invert_axis(document: vp.Document, invert_x: bool, invert_y: bool):
+def invert_axis(
+    document: vp.Document,
+    invert_x: bool,
+    invert_y: bool,
+    whole_page: bool = False,
+    unit_scale: float = 1.0,
+) -> vp.Document:
     """Inverts none, one or both axis of the document.
     This applies a relative scale operation with factors of 1 or -1
     on the two axis to all layers. The inversion happens relative to
+    the center of the page, if whole_page is true, otherwise to
     the center of the bounds.
     """
 
-    bounds = document.bounds()
+    if whole_page and document.page_size is None:
+        raise RuntimeError("Cannot flip a document with an undefined page size")
+
+    if whole_page:
+        # This is called after the document has been scaled, but the page size
+        # is not adjusted, so we need to adjust it here
+        (x, y) = document.page_size
+        bounds = (0.0, 0.0, x / unit_scale, y / unit_scale)
+    else:
+        bounds = document.bounds()
+
     if not bounds:
         return document
 
@@ -117,9 +134,13 @@ def gwrite(
 
     invert_x = config.get("invert_x", False)
     invert_y = config.get("invert_y", False)
+    flip_x = config.get("horizontal_flip", False)
+    flip_y = config.get("vertical_flip", False)
     # transform the document according to inversion parameters
     if invert_x or invert_y:
         document = invert_axis(document, invert_x, invert_y)
+    if flip_x or flip_y:
+        document = invert_axis(document, flip_x, flip_y, whole_page=True, unit_scale=unit_scale)
 
     # prepare
     current_layer: vp.LineCollection | None = None
