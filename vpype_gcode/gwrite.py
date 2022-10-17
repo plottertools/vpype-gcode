@@ -140,7 +140,9 @@ def gwrite(
     if invert_x or invert_y:
         document = invert_axis(document, invert_x, invert_y)
     if flip_x or flip_y:
-        document = invert_axis(document, flip_x, flip_y, whole_page=True, unit_scale=unit_scale)
+        document = invert_axis(
+            document, flip_x, flip_y, whole_page=True, unit_scale=unit_scale
+        )
 
     # prepare
     current_layer: vp.LineCollection | None = None
