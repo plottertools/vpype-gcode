@@ -28,9 +28,9 @@ info= "This gcode profile is correctly inverted across the y-axis"
 
 [gwrite.csv]
 document_start = "#Operation, X-value, Y-value\n"
-segment_first = "Move, {x:f}, {x:f}\n"
-segment = "Line-to, {x:f}, {x:f}\n"
-segment_last = "Stop, {x:f}, {x:f}\n"
+segment_first = "Move, {x:f}, {y:f}\n"
+segment = "Line-to, {x:f}, {y:f}\n"
+segment_last = "Stop, {x:f}, {y:f}\n"
 
 [gwrite.json]
 document_start = "{{"
