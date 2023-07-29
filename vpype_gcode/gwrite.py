@@ -175,7 +175,7 @@ def gwrite(
     yy = 0
     lastlayer_index = len(document.layers.values()) - 1
 
-    for layer_index, (layer_id, layer) in enumerate(document.layers.items()):
+    for layer_index, (layer_id, layer) in enumerate(sorted(document.layers.items())):
         current_layer = layer  # used by write_template()
 
         write_template(
