@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setup(
     name="vpype-gcode",
-    version="0.13.0",
+    version="0.14.0a0",
     description="vpype gcode plugin",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -14,9 +14,9 @@ setup(
     url="https://github.com/plottertools/vpype-gcode/",
     packages=["vpype_gcode"],
     classifiers=[
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Environment :: Console",
         "Topic :: Artistic Software",
         "Topic :: Multimedia :: Graphics",
