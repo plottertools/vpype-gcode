@@ -70,9 +70,12 @@ def invert_axis(
     type=vpype_cli.TextType(),
     help="set a default value for a variable in case it is not found as property",
 )
+@click.option(
+    "-q", "--quiet", is_flag=True, help="do not print the information string"
+)
 @vpype_cli.global_processor
 def gwrite(
-    document: vp.Document, output: typing.TextIO, profile: str, default: tuple[tuple[str, str]]
+    document: vp.Document, output: typing.TextIO, profile: str, default: tuple[tuple[str, str]], quiet: bool
 ):
     """
     Write gcode or other ascii files for the vpype pipeline.
@@ -320,7 +323,7 @@ def gwrite(
 
     # handle info string
     info = config.get("info", None)
-    if info:
+    if info and not quiet:
         print(info, file=sys.stderr)
 
     return orig_document
