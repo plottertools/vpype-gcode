@@ -29,7 +29,9 @@ def invert_axis(
     """
 
     if whole_page and document.page_size is None:
-        raise RuntimeError("Cannot flip a document with an undefined page size")
+        raise click.UsageError(
+            "This profile requires the page size to be set (consider using the `pagesize` or `layout` command)"
+        )
 
     if whole_page:
         # This is called after the document has been scaled, but the page size
