@@ -66,7 +66,7 @@ document_start = "M3 G21\n"
 layer_start = "(Start Layer)\n"
 line_start = "(Start Block)\n"
 segment_first = """G00 Z5
-G00 X{x:.4f}f Y{y:.4f}
+G00 X{x:.4f} Y{y:.4f}
 M3 S1000
 G4 P0.3
 G01 Z1 F3500
