@@ -11,34 +11,24 @@ jobs:
     name: Create Release and Upload to PyPI
     runs-on: ubuntu-latest
     steps:
-    - name: Get tag
-      id: tag
-      run: |
-        echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
-
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v2
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     - name: Build
       id: build
       run: |
-        pip install wheel
         python setup.py build sdist bdist_wheel
 
-    - name: Create Release
-      uses: "marvinpinto/action-automatic-releases@latest"
+    - name: Create GH release
+      uses: softprops/action-gh-release@v2
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: ${{ steps.tag.outputs.tag }}
-        prerelease: false
+        files: dist/*
         draft: true
-        files: |
-          dist/*
 
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
