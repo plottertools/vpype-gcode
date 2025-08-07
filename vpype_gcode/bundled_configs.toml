@@ -125,3 +125,27 @@ segment_first =  "G01 Z-10 (pen up)\nG00 X{dx:.4f} Y{dy:.4f} (travel)\nG01 Z+13 
 segment = "G01 X{dx:.4f} Y{dy:.4f} Z+0.01 (draw with minimum pressure)\n"
 document_end = "G01 Z-10 (pen up)\nG90 X0 Y0 (travel to origin)\nM2 (end)\n"
 unit = "mm"
+
+[gwrite.idraw_v2]
+# a set of configuration parameters for the idraw v2.0 (note that the idraw v1 does not use gcode)
+# these have been derived by monitoring how the inkscape idraw software communicates with the
+# plotter by dumping the inkscape extension plotter commands to a debug file
+# note: the assumption is that we start in the top right corner, like the inkscape extension
+unit = "mm"
+vertical_flip = true
+
+# set to mm, remember where we start, then
+# ensure the pen is lifted and set the pen up travel speed
+document_start = "G21\nG92 X0 Y0\nG1G90 Z0.5F20000\nG1 F8000\n"
+
+# travel to the start of a segment using negative relative coords then
+# lower a pen to absolute position z=5 and configure the pen down speed to 2000
+segment_first = "G1G91X{_dx:.3f}Y{_dy:.3f}\nG1G90 Z5.0F5000\nG1 F2000\n"
+# draw to negative relative position
+segment = "G1G91X{_dx:.3f}Y{_dy:.3f}\n"
+# draw to negative relative position then
+# lift a pen to absolute position z=0.5 and configure the pen up speed to 8000
+segment_last = "G1G91X{_dx:.3f}Y{_dy:.3f}\nG1G90 Z0.5F20000\nG1 F8000\n"
+
+# at the end of the document, move to where we started and then sleep ($SLP) to de-enegerise the steppers
+document_end = "G90G0 X0 Y0\n$SLP\n"
